@@ -108,21 +108,92 @@ const VerseSection: React.FC = () => {
   };
 
   const openMBWay = async (phoneNumber: string) => {
-    // Tenta abrir o app MB WAY com deep link
-    const mbwayUrl = `mbway://pay?phone=${phoneNumber}`;
+    // Primeiro copia o número (sempre funciona)
+    try {
+      await navigator.clipboard.writeText(phoneNumber);
+    } catch {
+      alert(`Copie este número: ${phoneNumber}`);
+    }
 
-    // Tenta abrir o app
-    window.location.href = mbwayUrl;
+    // Detecta o sistema operacional para usar a melhor abordagem
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
 
-    // Se não conseguir abrir o app após um tempo, copia o número
-    setTimeout(async () => {
-      try {
-        await navigator.clipboard.writeText(phoneNumber);
-        alert(`MB WAY não está instalado. Número ${phoneNumber} copiado para a área de transferência.`);
-      } catch {
-        alert(`Instale o app MB WAY primeiro. Número: ${phoneNumber}`);
+    let appOpened = false;
+
+    try {
+      // Deep links oficiais do MB WAY
+      const deepLinks = [
+        `mbway://pay?phone=${phoneNumber}`,
+        `mbway://pay?phonenumber=${phoneNumber}`,
+        `mbway://transfer?phone=${phoneNumber}`
+      ];
+
+      // Fallback web
+      const webFallback = `https://app.mbway.pt/pay?phone=${phoneNumber}`;
+
+      if (isIOS) {
+        // iOS: Melhor usar location.href para deep links
+        for (const link of deepLinks) {
+          try {
+            window.location.href = link;
+
+            // Pequena pausa para ver se o app abre
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Se chegou aqui, provavelmente o app não abriu
+            // Tenta o próximo formato
+          } catch (error) {
+            console.log('Erro iOS deep link:', error);
+          }
+        }
+
+        // Se nenhum deep link funcionou, tenta web fallback
+        window.open(webFallback, '_blank');
+
+      } else if (isAndroid) {
+        // Android: Pode usar tanto location.href quanto window.open
+        for (const link of deepLinks) {
+          try {
+            // Tenta com location.href primeiro
+            window.location.href = link;
+            await new Promise(resolve => setTimeout(resolve, 800));
+
+            // Se não funcionou, tenta com window.open
+            const popup = window.open(link, '_blank');
+            if (popup) {
+              popup.close(); // Fecha se não for o app
+            }
+          } catch (error) {
+            console.log('Erro Android deep link:', error);
+          }
+        }
+
+      } else {
+        // Desktop ou outros: Tenta abrir em nova aba
+        for (const link of deepLinks) {
+          window.open(link, '_blank');
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
       }
-    }, 1000);
+
+      appOpened = true;
+
+    } catch (error) {
+      console.log('Erro geral ao abrir MB WAY:', error);
+    }
+
+    // Mostra mensagem com instruções claras
+    alert(`✅ Número ${phoneNumber} copiado para a área de transferência!
+
+📱 ${appOpened ? 'Tentativa de abrir o app MB WAY realizada!' : 'App MB WAY pode não estar instalado.'}
+
+🔄 Próximos passos:
+1. ${appOpened ? 'Verifique se o app MB WAY abriu' : 'Instale o app MB WAY na loja de apps'}
+2. Abra o app e cole o número copiado
+3. Digite o valor da doação e confirme
+
+💚 Obrigado pela sua contribuição!`);
   };
 
   return (
@@ -185,11 +256,12 @@ const VerseSection: React.FC = () => {
           <h3 className="font-medium text-white/90">MB WAY</h3>
           <p className="text-white/80 text-sm">Pagamento rápido e seguro.</p>
           <button
-            onClick={() => openMBWay('912345678')} // ⚠️ SUBSTITUA PELO NÚMERO REAL DA IGREJA
+            onClick={() => openMBWay('965169925')}
             className="mt-2 text-sm px-3 py-1.5 bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center gap-2"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8v-2zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+              <text x="12" y="8" font-size="9" font-weight="bold" text-anchor="middle" fill="currentColor">MB</text>
+              <text x="12" y="18" font-size="9" font-weight="bold" text-anchor="middle" fill="currentColor">WAY</text>
             </svg>
             Pagar com MB WAY
           </button>
