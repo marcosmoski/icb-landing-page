@@ -7,16 +7,19 @@ const InspirationSection: React.FC = () => {
 
       <div className="relative overflow-hidden rounded-2xl mb-6">
         <img
-          src="/jesus.png"
-          alt="Pessoa abraçando Jesus - representação espiritual"
-          className="w-full h-64 md:h-80 object-cover"
+          src="/icb_dizimos.png"
+          alt="Imagem dizimos e ofertas"
+          className="w-full h-100 md:h-100 object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         <div className="absolute bottom-4 left-4 right-4 text-white">
-          <p className="text-sm md:text-base font-medium leading-relaxed">
-            "Venham a mim, todos os que estão cansados e sobrecarregados, e eu lhes darei descanso."
+          <p className="text-black/90 text-sm md:text-base font-bold leading-relaxed">
+            "Trazei todos os dízimos à casa do tesouro, para que haja mantimento na minha casa, 
+            e depois fazei prova de mim nisto, diz o Senhor dos Exércitos, 
+            se eu não vos abrir as janelas do céu, 
+            e não derramar sobre vós uma bênção tal até que não haja lugar suficiente para a recolherdes."
           </p>
-          <p className="text-xs md:text-sm opacity-90 mt-1">— Mateus 11:28</p>
+          <p className="text-black/90 text-xs md:text-sm opacity-90 font-bold mt-1">— Malaquias 3:10</p>
         </div>
       </div>
 
