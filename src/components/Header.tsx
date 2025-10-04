@@ -28,7 +28,7 @@ const Header: React.FC = () => {
         />
         <div>
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Igreja ICB Gaia — Dízimos e Ofertas</h1>
-          <p className="text-white/70 text-sm">"Cada um contribua segundo propôs no coração..." (2 Co 9:7)</p>
+          <p className="text-white/70 text-sm">"É sobre dar uma fatia de bolo a quem já te deu o bolo inteiro..."</p>
         </div>
       </div>
 

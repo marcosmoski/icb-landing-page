@@ -7,19 +7,21 @@ const InspirationSection: React.FC = () => {
 
       <div className="relative overflow-hidden rounded-2xl mb-6">
         <img
-          src="/icb_dizimos.png"
+          src="/dizimos.png"
           alt="Imagem dizimos e ofertas"
           className="w-full h-100 md:h-100 object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-        <div className="absolute bottom-4 left-4 right-4 text-white">
-          <p className="text-black/90 text-sm md:text-base font-bold leading-relaxed">
-            "Trazei todos os dízimos à casa do tesouro, para que haja mantimento na minha casa, 
-            e depois fazei prova de mim nisto, diz o Senhor dos Exércitos, 
-            se eu não vos abrir as janelas do céu, 
-            e não derramar sobre vós uma bênção tal até que não haja lugar suficiente para a recolherdes."
-          </p>
-          <p className="text-black/90 text-xs md:text-sm opacity-90 font-bold mt-1">— Malaquias 3:10</p>
+        <div className="absolute bottom-0 left-4 right-4 text-white">
+          <div className="bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-white/10">
+            <p className="text-white text-sm md:text-base font-bold leading-relaxed drop-shadow-lg">
+              "Trazei todos os dízimos à casa do tesouro, para que haja mantimento na minha casa, 
+              e depois fazei prova de mim nisto, diz o Senhor dos Exércitos, 
+              se eu não vos abrir as janelas do céu, 
+              e não derramar sobre vós uma bênção tal até que não haja lugar suficiente para a recolherdes."
+            </p>
+            <p className="text-white text-xs md:text-sm font-bold mt-2 drop-shadow-lg">— Malaquias 3:10</p>
+          </div>
         </div>
       </div>
 
