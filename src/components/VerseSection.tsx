@@ -115,83 +115,38 @@ const VerseSection: React.FC = () => {
       alert(`Copie este número: ${phoneNumber}`);
     }
 
-    // Detecta o sistema operacional para usar a melhor abordagem
+    // Detecta o sistema operacional
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
 
-    let appOpened = false;
-
     try {
-      // Deep links oficiais do MB WAY
-      const deepLinks = [
-        `mbway://pay?phone=${phoneNumber}`,
-        `mbway://pay?phonenumber=${phoneNumber}`,
-        `mbway://transfer?phone=${phoneNumber}`
-      ];
-
-      // Fallback web
-      const webFallback = `https://app.mbway.pt/pay?phone=${phoneNumber}`;
+      // Uma tentativa de deep link baseada no SO
+      const deepLink = `mbway://pay?phone=${phoneNumber}`;
 
       if (isIOS) {
-        // iOS: Melhor usar location.href para deep links
-        for (const link of deepLinks) {
-          try {
-            window.location.href = link;
-
-            // Pequena pausa para ver se o app abre
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Se chegou aqui, provavelmente o app não abriu
-            // Tenta o próximo formato
-          } catch (error) {
-            console.log('Erro iOS deep link:', error);
-          }
-        }
-
-        // Se nenhum deep link funcionou, tenta web fallback
-        window.open(webFallback, '_blank');
-
+        // iOS: usa location.href (mais confiável)
+        window.location.href = deepLink;
       } else if (isAndroid) {
-        // Android: Pode usar tanto location.href quanto window.open
-        for (const link of deepLinks) {
-          try {
-            // Tenta com location.href primeiro
-            window.location.href = link;
-            await new Promise(resolve => setTimeout(resolve, 800));
-
-            // Se não funcionou, tenta com window.open
-            const popup = window.open(link, '_blank');
-            if (popup) {
-              popup.close(); // Fecha se não for o app
-            }
-          } catch (error) {
-            console.log('Erro Android deep link:', error);
-          }
-        }
-
+        // Android: tenta location.href primeiro
+        window.location.href = deepLink;
       } else {
-        // Desktop ou outros: Tenta abrir em nova aba
-        for (const link of deepLinks) {
-          window.open(link, '_blank');
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
+        // Desktop: abre em nova aba
+        window.open(deepLink, '_blank');
       }
 
-      appOpened = true;
-
     } catch (error) {
-      console.log('Erro geral ao abrir MB WAY:', error);
+      console.log('Erro ao tentar abrir MB WAY:', error);
     }
 
     // Mostra mensagem com instruções claras
     alert(`✅ Número ${phoneNumber} copiado para a área de transferência!
 
-📱 ${appOpened ? 'Tentativa de abrir o app MB WAY realizada!' : 'App MB WAY pode não estar instalado.'}
+📱 Tentativa de abrir o app MB WAY realizada!
 
 🔄 Próximos passos:
-1. ${appOpened ? 'Verifique se o app MB WAY abriu' : 'Instale o app MB WAY na loja de apps'}
-2. Abra o app e cole o número copiado
-3. Digite o valor da doação e confirme
+1. Verifique se o app MB WAY abriu automaticamente
+2. Se não abriu, abra o app manualmente
+3. Cole o número copiado e confirme a doação
 
 💚 Obrigado pela sua contribuição!`);
   };
