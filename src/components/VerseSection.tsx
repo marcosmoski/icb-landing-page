@@ -108,47 +108,62 @@ const VerseSection: React.FC = () => {
   };
 
   const openMBWay = async (phoneNumber: string) => {
-    // Primeiro copia o número (sempre funciona)
+    // Copia o número para a área de transferência primeiro
     try {
       await navigator.clipboard.writeText(phoneNumber);
     } catch {
-      alert(`Copie este número: ${phoneNumber}`);
+      // Fallback se clipboard não funcionar
+      console.log(`Número copiado: ${phoneNumber}`);
     }
 
     // Detecta o sistema operacional
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
 
-    try {
-      // Uma tentativa de deep link baseada no SO
-      const deepLink = `mbway://pay?phone=${phoneNumber}`;
+    // Define o deep link baseado no SO
+    const deepLink = `mbway://pay?phone=${phoneNumber}`;
 
-      if (isIOS) {
-        // iOS: usa location.href (mais confiável)
-        window.location.href = deepLink;
-      } else if (isAndroid) {
-        // Android: tenta location.href primeiro
-        window.location.href = deepLink;
-      } else {
-        // Desktop: abre em nova aba
-        window.open(deepLink, '_blank');
+    // Tenta abrir o app primeiro (silenciosamente)
+    const openAppAttempt = () => {
+      try {
+        if (isIOS) {
+          // iOS: location.href funciona bem
+          window.location.href = deepLink;
+        } else if (isAndroid) {
+          // Android: tenta múltiplas abordagens
+          window.location.href = deepLink;
+          // Fallback com intent
+          setTimeout(() => {
+            window.location.href = `intent://pay?phone=${phoneNumber}#Intent;scheme=mbway;package=com.pt.mbway;S.browser_fallback_url=https%3A%2F%2Fwww.mbway.pt%2F;end`;
+          }, 100);
+        } else {
+          // Desktop: abre em nova aba
+          window.open(deepLink, '_blank');
+        }
+      } catch (error) {
+        console.log('Erro ao tentar abrir MB WAY:', error);
       }
+    };
 
-    } catch (error) {
-      console.log('Erro ao tentar abrir MB WAY:', error);
-    }
+    // Abre o app primeiro
+    openAppAttempt();
 
-    // Mostra mensagem com instruções claras
-    alert(`✅ Número ${phoneNumber} copiado para a área de transferência!
+    // Timeout para mostrar instruções se o app não abriu
+    setTimeout(() => {
+      // Verifica se ainda estamos na mesma página (app não abriu)
+      if (document.hasFocus()) {
+        alert(`📱 MB WAY não abriu automaticamente?
 
-📱 Tentativa de abrir o app MB WAY realizada!
+✅ Número ${phoneNumber} já foi copiado!
 
-🔄 Próximos passos:
-1. Verifique se o app MB WAY abriu automaticamente
-2. Se não abriu, abra o app manualmente
-3. Cole o número copiado e confirme o valor do seu dízimo/oferta
+🔄 Instruções:
+1. Abra o app MB WAY manualmente
+2. Cole o número copiado
+3. Confirme o valor do seu dízimo/oferta
 
 💚 Obrigado pela sua contribuição!`);
+      }
+    }, 2000); // 2 segundos de timeout
   };
 
   return (
