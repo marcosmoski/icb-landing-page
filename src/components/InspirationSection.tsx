@@ -5,24 +5,27 @@ const InspirationSection: React.FC = () => {
     <section className="card bg-white/5 backdrop-blur rounded-3xl p-6">
       <h2 className="text-xl font-semibold mb-4">Uma Bênção Especial</h2>
 
+      <div className="mb-6">
+        <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl p-6 border border-white/10">
+          <p className="text-white text-sm md:text-base font-bold leading-relaxed mb-3">
+            "Trazei todos os dízimos à casa do tesouro, para que haja mantimento na minha casa, 
+            e depois fazei prova de mim nisto, diz o Senhor dos Exércitos, 
+            se eu não vos abrir as janelas do céu, 
+            e não derramar sobre vós uma bênção tal até que não haja lugar suficiente para a recolherdes."
+          </p>
+          <p className="text-white/90 text-xs md:text-sm font-semibold">— Malaquias 3:10</p>
+        </div>
+      </div>
+
+
       <div className="relative overflow-hidden rounded-2xl mb-6">
         <img
           src="/dizimos.png"
           alt="Imagem dizimos e ofertas"
-          className="w-full h-100 md:h-100 object-cover"
+          className="w-full h-90 md:h-90 object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-        <div className="absolute bottom-0 left-4 right-4 text-white">
-          <div className="bg-black/40 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-            <p className="text-white text-sm md:text-base font-bold leading-relaxed drop-shadow-lg">
-              "Trazei todos os dízimos à casa do tesouro, para que haja mantimento na minha casa, 
-              e depois fazei prova de mim nisto, diz o Senhor dos Exércitos, 
-              se eu não vos abrir as janelas do céu, 
-              e não derramar sobre vós uma bênção tal até que não haja lugar suficiente para a recolherdes."
-            </p>
-            <p className="text-white text-xs md:text-sm font-bold mt-2 drop-shadow-lg">— Malaquias 3:10</p>
-          </div>
-        </div>
+      
       </div>
 
       <div className="text-center space-y-4">
