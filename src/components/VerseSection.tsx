@@ -89,11 +89,11 @@ const VerseSection: React.FC = () => {
   };
 
   const shareData = async () => {
-    const text = `Doação — Igreja ICB\nBeneficiário: RESGATAR INDICES - ASSOCIAÇÃO\nIBAN: PT50003604079910602581786`;
+    const text = `Dízimos e Ofertas — Igreja ICB Gaia\nBeneficiário: RESGATAR INDICES - ASSOCIAÇÃO\nIBAN: PT50003604079910602581786`;
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'Doações — Igreja ICB', text });
+        await navigator.share({ title: 'Dízimos e Ofertas — Igreja ICB Gaia', text });
       } catch {
         // User cancelled sharing
       }
@@ -146,7 +146,7 @@ const VerseSection: React.FC = () => {
 🔄 Próximos passos:
 1. Verifique se o app MB WAY abriu automaticamente
 2. Se não abriu, abra o app manualmente
-3. Cole o número copiado e confirme a doação
+3. Cole o número copiado e confirme o valor do seu dízimo/oferta
 
 💚 Obrigado pela sua contribuição!`);
   };
@@ -227,7 +227,7 @@ const VerseSection: React.FC = () => {
       <div className="mt-8 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl p-6 border border-white/10">
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
           <span className="text-2xl">💡</span>
-          Como fazer sua doação
+          Como fazer sua a sua oferta
         </h3>
         <div className="space-y-3 text-white/90">
           <div className="flex items-start gap-3">
@@ -244,7 +244,7 @@ const VerseSection: React.FC = () => {
           </div>
           <div className="flex items-start gap-3">
             <span className="bg-white/20 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">4</span>
-            <p><strong>Cole o IBAN</strong>, digite o valor que quer doar e finalize a operação</p>
+            <p><strong>Cole o IBAN</strong>, digite o valor que quer ofertar e finalize a operação</p>
           </div>
         </div>
         

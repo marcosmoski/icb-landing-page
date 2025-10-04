@@ -27,7 +27,7 @@ const Header: React.FC = () => {
           className="w-14 h-14 rounded-xl ring-2 ring-white/20"
         />
         <div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Igreja ICB — Doações</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Igreja ICB Gaia — Dízimos e Ofertas</h1>
           <p className="text-white/70 text-sm">"Cada um contribua segundo propôs no coração..." (2 Co 9:7)</p>
         </div>
       </div>

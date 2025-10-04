@@ -22,7 +22,7 @@ const InspirationSection: React.FC = () => {
 
       <div className="text-center space-y-4">
         <h3 className="text-lg font-semibold text-white">
-          Sua doação é uma bênção
+          Sua oferta é uma bênção
         </h3>
         <p className="text-white/80 leading-relaxed">
           Cada contribuição ajuda nossa igreja a levar esperança, amor e apoio para mais famílias
@@ -35,7 +35,7 @@ const InspirationSection: React.FC = () => {
             <h4 className="font-semibold text-yellow-100">Impacto Real</h4>
           </div>
           <p className="text-yellow-100/90 text-sm">
-            Suas doações ajudam na manutenção do templo, apoio às famílias carentes,
+            Suas ofertas ajudam na manutenção do templo, apoio às famílias carentes,
             estudos bíblicos e projetos missionários.
           </p>
         </div>
