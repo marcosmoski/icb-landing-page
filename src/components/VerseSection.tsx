@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-interface VerseSectionProps {}
-
-const VerseSection: React.FC<VerseSectionProps> = () => {
+const VerseSection: React.FC = () => {
   const [currentVerse, setCurrentVerse] = useState('');
 
   const verses = [
@@ -13,14 +11,14 @@ const VerseSection: React.FC<VerseSectionProps> = () => {
     '"Entrega o teu caminho ao Senhor; confia nele..." — Salmo 37:5',
   ];
 
-  const getRandomVerse = () => {
+  const getRandomVerse = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * verses.length);
     setCurrentVerse(verses[randomIndex]);
-  };
+  }, [verses]);
 
   useEffect(() => {
     getRandomVerse();
-  }, []);
+  }, [getRandomVerse]);
 
   const copyToClipboard = async (text: string, buttonElement: HTMLButtonElement) => {
     try {
@@ -30,7 +28,7 @@ const VerseSection: React.FC<VerseSectionProps> = () => {
       setTimeout(() => {
         buttonElement.textContent = originalText;
       }, 1500);
-    } catch (error) {
+    } catch {
       alert('Não foi possível copiar');
     }
   };
@@ -41,14 +39,14 @@ const VerseSection: React.FC<VerseSectionProps> = () => {
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Doações — Igreja', text });
-      } catch (error) {
+      } catch {
         // User cancelled sharing
       }
     } else {
       try {
         await navigator.clipboard.writeText(text);
         alert('Dados copiados para partilha.');
-      } catch (error) {
+      } catch {
         alert('Não foi possível copiar os dados');
       }
     }

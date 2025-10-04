@@ -1,8 +1,6 @@
 import React from 'react';
 
-interface HeaderProps {}
-
-const Header: React.FC<HeaderProps> = () => {
+const Header: React.FC = () => {
   return (
     <header className="max-w-6xl mx-auto px-6 pt-8 pb-4 flex items-center gap-4">
       <img 

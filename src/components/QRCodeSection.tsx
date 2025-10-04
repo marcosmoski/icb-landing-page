@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import QRCode from 'qrcode';
 
-interface QRCodeSectionProps {}
-
-const QRCodeSection: React.FC<QRCodeSectionProps> = () => {
+const QRCodeSection: React.FC = () => {
   const [amount, setAmount] = useState('');
   const [activoToken, setActivoToken] = useState('');
   const epcQrRef = useRef<HTMLCanvasElement>(null);
@@ -27,7 +25,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = () => {
     return lines.join("\r\n") + "\r\n";
   };
 
-  const generateEpcQR = async () => {
+  const generateEpcQR = useCallback(async () => {
     if (!epcQrRef.current) return;
     
     const payload = buildEpc(amount);
@@ -43,9 +41,9 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = () => {
     } catch (error) {
       console.error('Erro ao gerar QR EPC:', error);
     }
-  };
+  }, [amount]);
 
-  const generateActivoQR = async () => {
+  const generateActivoQR = useCallback(async () => {
     if (!activoQrRef.current) return;
     
     const text = activoToken.trim() || "li/EXEMPLO_COLE_O_TOKEN_AQUI";
@@ -61,7 +59,7 @@ const QRCodeSection: React.FC<QRCodeSectionProps> = () => {
     } catch (error) {
       console.error('Erro ao gerar QR Activo:', error);
     }
-  };
+  }, [activoToken]);
 
   const downloadQR = (canvasRef: React.RefObject<HTMLCanvasElement>, filename: string) => {
     if (!canvasRef.current) return;

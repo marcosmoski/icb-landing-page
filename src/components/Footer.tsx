@@ -1,8 +1,6 @@
 import React from 'react';
 
-interface FooterProps {}
-
-const Footer: React.FC<FooterProps> = () => {
+const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
