@@ -90,7 +90,7 @@ const VerseSection: React.FC = () => {
 
   const shareData = async () => {
     const text = `Doação — Igreja ICB\nBeneficiário: RESGATAR INDICES - ASSOCIAÇÃO\nIBAN: PT50003604079910602581786`;
-    
+
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Doações — Igreja ICB', text });
@@ -105,6 +105,24 @@ const VerseSection: React.FC = () => {
         alert('Não foi possível copiar os dados');
       }
     }
+  };
+
+  const openMBWay = async (phoneNumber: string) => {
+    // Tenta abrir o app MB WAY com deep link
+    const mbwayUrl = `mbway://pay?phone=${phoneNumber}`;
+
+    // Tenta abrir o app
+    window.location.href = mbwayUrl;
+
+    // Se não conseguir abrir o app após um tempo, copia o número
+    setTimeout(async () => {
+      try {
+        await navigator.clipboard.writeText(phoneNumber);
+        alert(`MB WAY não está instalado. Número ${phoneNumber} copiado para a área de transferência.`);
+      } catch {
+        alert(`Instale o app MB WAY primeiro. Número: ${phoneNumber}`);
+      }
+    }, 1000);
   };
 
   return (
@@ -155,11 +173,25 @@ const VerseSection: React.FC = () => {
         <div className="bg-white/5 rounded-2xl p-4">
           <h3 className="font-medium text-white/90">Partilhar</h3>
           <p className="text-white/80 text-sm">Envie os dados para alguém.</p>
-          <button 
+          <button
             onClick={shareData}
             className="mt-2 text-sm px-3 py-1.5 bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
           >
             Partilhar
+          </button>
+        </div>
+
+        <div className="bg-white/5 rounded-2xl p-4">
+          <h3 className="font-medium text-white/90">MB WAY</h3>
+          <p className="text-white/80 text-sm">Pagamento rápido e seguro.</p>
+          <button
+            onClick={() => openMBWay('912345678')} // ⚠️ SUBSTITUA PELO NÚMERO REAL DA IGREJA
+            className="mt-2 text-sm px-3 py-1.5 bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8v-2zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+            </svg>
+            Pagar com MB WAY
           </button>
         </div>
       </div>
