@@ -61,7 +61,7 @@ const QRCodeSection: React.FC = () => {
     }
   }, [activoToken]);
 
-  const downloadQR = (canvasRef: React.RefObject<HTMLCanvasElement>, filename: string) => {
+  const downloadQR = (canvasRef: React.RefObject<HTMLCanvasElement | null>, filename: string) => {
     if (!canvasRef.current) return;
     
     const link = document.createElement('a');
