@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useToast } from '../hooks/useToast';
 
 interface BibleVerse {
   text: string;
@@ -8,6 +9,9 @@ interface BibleVerse {
 const VerseSection: React.FC = () => {
   const [currentVerse, setCurrentVerse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Hook de notificações
+  const { success, showToast } = useToast();
 
   // Versículos locais como fallback
   const fallbackVerses = useMemo(() => [
@@ -108,9 +112,18 @@ const VerseSection: React.FC = () => {
   };
 
   const openMBWay = async (phoneNumber: string) => {
+    // Mostra toast inicial bonitinho com duração curta
+    showToast({
+      type: 'info',
+      title: 'MB WAY',
+      message: 'Tentando abrir o app automaticamente...',
+      duration: 3000
+    });
+
     // Copia o número para a área de transferência primeiro
     try {
       await navigator.clipboard.writeText(phoneNumber);
+      success('Número copiado!', `${phoneNumber} está na área de transferência.`);
     } catch {
       // Fallback se clipboard não funcionar
       console.log(`Número copiado: ${phoneNumber}`);
@@ -152,16 +165,23 @@ const VerseSection: React.FC = () => {
     setTimeout(() => {
       // Verifica se ainda estamos na mesma página (app não abriu)
       if (document.hasFocus()) {
-        alert(`📱 MB WAY não abriu automaticamente?
-
-✅ Número ${phoneNumber} já foi copiado!
-
-🔄 Instruções:
-1. Abra o app MB WAY manualmente
-2. Cole o número copiado
-3. Confirme o valor do seu dízimo/oferta
-
-💚 Obrigado pela sua contribuição!`);
+        showToast({
+          type: 'info',
+          title: 'MB WAY não abriu?',
+          message: 'Abra o app manualmente e cole o número copiado.',
+          duration: 8000,
+          action: {
+            label: 'Ver instruções',
+            onClick: () => {
+              showToast({
+                type: 'info',
+                title: '📱 Instruções MB WAY',
+                message: '1. Abra o app MB WAY\n2. Cole o número copiado\n3. Confirme seu dízimo/oferta\n\n💚 Obrigado pela contribuição!',
+                duration: 10000
+              });
+            }
+          }
+        });
       }
     }, 2000); // 2 segundos de timeout
   };
