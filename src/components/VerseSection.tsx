@@ -119,7 +119,7 @@ const VerseSection: React.FC = () => {
   const APPSTORE_URL = 'https://apps.apple.com/app/id918126133';
 
   // Se um dia você tiver o scheme do MB WAY, põe aqui:
-  const MBWAY_SCHEME_URL = 'mbway://open'; // (exemplo; não é público oficialmente)
+  const MBWAY_SCHEME_URL = 'mbway://pay'; // (exemplo; não é público oficialmente)
 
   // Detecta o sistema operacional e navegador
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -129,7 +129,7 @@ const VerseSection: React.FC = () => {
 
   const openMBWay = async (phoneNumber: string) => {
     // Copia o número para a área de transferência primeiro
-    const clipboardText = `${phoneNumber} - Dízimo`;
+    const clipboardText = `${phoneNumber}`;
     try {
       await navigator.clipboard.writeText(clipboardText);
       showToast({
@@ -175,40 +175,20 @@ const VerseSection: React.FC = () => {
       window.addEventListener('pagehide', onHidden, { once: true, capture: true });
       window.addEventListener('blur', onHidden, { once: true, capture: true });
 
-      // timeout de segurança: apenas indica que não detectamos abertura
-      const FAILSAFE_MS = 2000;
-      const t = setTimeout(() => {
-        // NÃO abre store automaticamente - apenas indica falha na detecção
-        finish(false);
-      }, FAILSAFE_MS);
-
       try {
-        if (isAndroid) {
-          // Android: tenta abrir app com intent simples (sem fallback automático)
-       
+        const deepLink = `mbway://pay`;
+        console.log('Tentando abrir MB WAY:', deepLink);
+        
+        if (isAndroid || isIOS) {
           window.location.href = MBWAY_SCHEME_URL;
-          // Se o app abrir, o onHidden resolve true antes do timeout.
-          return;
+        } else {
+          // Desktop: abre site
+          window.open('https://www.mbway.pt/', '_blank');
         }
-
-        if (isIOS) {
-          // Se você tiver um scheme válido, descomente a linha abaixo:
-           window.location.href = MBWAY_SCHEME_URL;
-          // Como o scheme não é público, vamos direto ao fallback após o timeout (acima).
-          // Em Safari iOS, se um dia houver universal link, funcionaria aqui.
-          return;
-        }
-
-        // Desktop: abre site oficial (ou tua página com instruções)
-        clearTimeout(t);
-        window.open('https://www.mbway.pt/', '_blank', 'noopener');
-        finish(false);
-      } catch (e: unknown ) {
-        console.error('Erro ao abrir MB WAY:', e);
-        clearTimeout(t);
-        finish(false);
+      } catch (error) {
+        console.log('Erro ao tentar abrir MB WAY:', error);
       }
-    });
+    
 
     // Feedback inteligente baseado no resultado
     if (isMobile) {
@@ -225,7 +205,11 @@ const VerseSection: React.FC = () => {
         showToast({
           type: 'info',
           title: 'Como usar o MB WAY',
-          message: `${phoneNumber} copiado\n\n1. Abra o app MB WAY\n2. Vá em "Pagar"\n3. Cole o número\n4. Digite o valor`,
+          message: `${phoneNumber} copiado\n\n
+                    1. Abra o app MB WAY\n
+                    2. Vá em "Pagar"\n
+                    3. Cole o número\n
+                    4. Digite o valor`,
           duration: 15000,
           action: {
             label: isAndroid ? '📱 Play Store' : '📱 App Store',
@@ -248,7 +232,8 @@ const VerseSection: React.FC = () => {
         }
       });
     }
-  };
+  });
+};
 
 
 
