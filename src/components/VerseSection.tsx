@@ -129,14 +129,12 @@ const VerseSection: React.FC = () => {
   const isSafari = /Safari/.test(navigator.userAgent) && !isChrome;
   const isMobile = isIOS || isAndroid;
 
-  function buildAndroidIntentUrl(fallback: string, phoneNumber: string) {
-    // você pode trocar "open" por outra rota se existir
-    // importante: manter scheme e package
+  function buildAndroidIntentUrl(phoneNumber: string) {
+    // Intent SEM fallback automático - deixa o sistema decidir o que fazer
     return (
       'intent://open?phone=' + phoneNumber + '#Intent;' +
       'scheme=mbway;' +
       'package=pt.sibs.android.mbway;' +
-      'S.browser_fallback_url=' + encodeURIComponent(fallback) + ';' +
       'end'
     );
   }
@@ -182,23 +180,17 @@ const VerseSection: React.FC = () => {
       window.addEventListener('pagehide', onHidden, { once: true, capture: true });
       window.addEventListener('blur', onHidden, { once: true, capture: true });
 
-      // timeout de segurança: se nada acontecer, manda para fallback e retorna false
-      const FAILSAFE_MS = 3000;
+      // timeout de segurança: apenas indica que não detectou abertura do app
+      const FAILSAFE_MS = 2500;
       const t = setTimeout(() => {
-        // iOS -> App Store; Android -> Play Store (se não usamos intent)
-        if (isIOS) {
-          window.location.href = APPSTORE_URL;
-        } else if (isAndroid && !isChrome) {
-          // Em navegadores Android não-Chrome, cair para Play Store
-          window.location.href = PLAY_URL;
-        }
+        // NÃO abre store automaticamente - apenas retorna false
         finish(false);
       }, FAILSAFE_MS);
 
       try {
         if (isAndroid) {
-          // Chrome/Samsung/Edge: melhor caminho é intent:// (com fallback)
-          const intentUrl = buildAndroidIntentUrl(PLAY_URL, phoneNumber);
+          // Android: usa intent para tentar abrir o app MB WAY
+          const intentUrl = buildAndroidIntentUrl(phoneNumber);
           window.location.href = intentUrl;
           // Se o app abrir, o onHidden resolve true antes do timeout.
           return;
@@ -216,7 +208,8 @@ const VerseSection: React.FC = () => {
         clearTimeout(t);
         window.open('https://www.mbway.pt/', '_blank', 'noopener');
         finish(false);
-      } catch (e) {
+      } catch (e: unknown ) {
+        console.error('Erro ao abrir MB WAY:', e);
         clearTimeout(t);
         finish(false);
       }
@@ -232,33 +225,66 @@ const VerseSection: React.FC = () => {
           duration: 4000
         });
       } else {
-        showToast({
-          type: 'warning',
-          title: 'App não abriu automaticamente',
-          message: `${phoneNumber} copiado - Abra o MB WAY manualmente para confirmar seu dízimo/oferta.`,
-          duration: 8000,
-          action: {
-            label: 'Copiar número',
-            onClick: async () => {
-              try {
-                await navigator.clipboard.writeText(phoneNumber);
-                showToast({
-                  type: 'success',
-                  title: 'Número copiado!',
-                  message: phoneNumber,
-                  duration: 2000
-                });
-              } catch {
-                showToast({
-                  type: 'error',
-                  title: 'Erro',
-                  message: 'Não foi possível copiar automaticamente.',
-                  duration: 3000
-                });
-              }
+        // Cria o toast com múltiplas ações
+        const actions: Array<{ label: string; onClick: () => void }> = [];
+
+        // Botão para baixar o app
+        if (isIOS) {
+          actions.push({
+            label: '📱 Baixar MB WAY',
+            onClick: () => window.open(APPSTORE_URL, '_blank')
+          });
+        } else if (isAndroid) {
+          actions.push({
+            label: '📱 Baixar MB WAY',
+            onClick: () => window.open(PLAY_URL, '_blank')
+          });
+        }
+
+        // Botão para copiar número
+        actions.push({
+          label: '📋 Copiar número',
+          onClick: async () => {
+            try {
+              await navigator.clipboard.writeText(phoneNumber);
+              showToast({
+                type: 'success',
+                title: 'Número copiado!',
+                message: phoneNumber,
+                duration: 2000
+              });
+            } catch {
+              showToast({
+                type: 'error',
+                title: 'Erro',
+                message: 'Não foi possível copiar automaticamente.',
+                duration: 3000
+              });
             }
           }
         });
+
+        showToast({
+          type: 'warning',
+          title: 'App não abriu automaticamente',
+          message: `${phoneNumber} copiado - Instale o MB WAY ou abra manualmente.`,
+          duration: 10000,
+          action: actions.length > 1 ? actions[0] : undefined, // Por enquanto usa apenas o primeiro
+          // TODO: Implementar múltiplas ações no toast system
+        });
+
+        // Mostra toast adicional com a segunda opção se houver
+        if (actions.length > 1) {
+          setTimeout(() => {
+            showToast({
+              type: 'info',
+              title: 'Ou copie o número:',
+              message: phoneNumber,
+              duration: 5000,
+              action: actions[1]
+            });
+          }, 2000);
+        }
       }
     } else {
       // Desktop
