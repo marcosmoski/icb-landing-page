@@ -124,33 +124,28 @@ const VerseSection: React.FC = () => {
   // Detecta o sistema operacional e navegador
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isAndroid = /Android/.test(navigator.userAgent);
-  const isChrome = /Chrome/.test(navigator.userAgent);
-  const isFirefox = /Firefox/.test(navigator.userAgent);
-  const isSafari = /Safari/.test(navigator.userAgent) && !isChrome;
   const isMobile = isIOS || isAndroid;
 
-  function buildAndroidIntentUrl(phoneNumber: string) {
-    // Intent SEM fallback automático - vamos controlar o fallback via timeout
-    return (
-      'intent://mbway?phone=' + phoneNumber + '#Intent;' +
-      'scheme=mbway;' +
-      'package=pt.sibs.android.mbway;' +
-      'end'
-    );
-  }
 
   const openMBWay = async (phoneNumber: string) => {
     // Copia o número para a área de transferência primeiro
+    const clipboardText = `${phoneNumber} - Dízimo`;
     try {
-      await navigator.clipboard.writeText(phoneNumber);
+      await navigator.clipboard.writeText(clipboardText);
+      showToast({
+        type: 'success',
+        title: 'Número copiado!',
+        message: clipboardText,
+        duration: 3000
+      });
     } catch {
-      // Fallback se clipboard não funcionar
-      console.log(`Número copiado: ${phoneNumber}`);
+      showToast({
+        type: 'info',
+        title: 'Número para MB WAY',
+        message: clipboardText,
+        duration: 4000
+      });
     }
-
-    console.log('Ambiente MB WAY detectado:', {
-      isIOS, isAndroid, isChrome, isFirefox, isSafari, userAgent: navigator.userAgent
-    });
 
     // Usa a lógica do usuário com detecção de abertura de app
     const appOpened = await new Promise<boolean>((resolve) => {
@@ -190,9 +185,8 @@ const VerseSection: React.FC = () => {
       try {
         if (isAndroid) {
           // Android: tenta abrir app com intent simples (sem fallback automático)
-          const intentUrl = buildAndroidIntentUrl(phoneNumber);
-          console.log('Tentando abrir MB WAY:', intentUrl);
-          window.location.href = intentUrl;
+       
+          window.location.href = MBWAY_SCHEME_URL;
           // Se o app abrir, o onHidden resolve true antes do timeout.
           return;
         }
@@ -224,7 +218,7 @@ const VerseSection: React.FC = () => {
           type: 'success',
           title: 'MB WAY aberto!',
           message: 'Confirme o pagamento no aplicativo.',
-          duration: 4000
+          duration: 15000
         });
       } else {
         // App não abriu (ou não conseguimos detectar)
@@ -232,7 +226,7 @@ const VerseSection: React.FC = () => {
           type: 'info',
           title: 'Como usar o MB WAY',
           message: `${phoneNumber} copiado\n\n1. Abra o app MB WAY\n2. Vá em "Pagar"\n3. Cole o número\n4. Digite o valor`,
-          duration: 10000,
+          duration: 15000,
           action: {
             label: isAndroid ? '📱 Play Store' : '📱 App Store',
             onClick: () => {
@@ -247,7 +241,7 @@ const VerseSection: React.FC = () => {
         type: 'info',
         title: 'MB WAY',
         message: 'Abra o site oficial para mais informações.',
-        duration: 5000,
+        duration: 15000,
         action: {
           label: '🌐 Site MB WAY',
           onClick: () => window.open('https://www.mbway.pt/', '_blank')
