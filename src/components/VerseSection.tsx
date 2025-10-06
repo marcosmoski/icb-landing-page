@@ -119,7 +119,7 @@ const VerseSection: React.FC = () => {
   const APPSTORE_URL = 'https://apps.apple.com/app/id918126133';
 
   // Se um dia você tiver o scheme do MB WAY, põe aqui:
-  const MBWAY_SCHEME_URL = 'mbway://pay'; // (exemplo; não é público oficialmente)
+  const MBWAY_SCHEME_URL = 'mbway://open'; // (exemplo; não é público oficialmente)
 
   // Detecta o sistema operacional e navegador
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -176,9 +176,6 @@ const VerseSection: React.FC = () => {
       window.addEventListener('blur', onHidden, { once: true, capture: true });
 
       try {
-        const deepLink = `mbway://pay`;
-        console.log('Tentando abrir MB WAY:', deepLink);
-        
         if (isAndroid || isIOS) {
           window.location.href = MBWAY_SCHEME_URL;
         } else {
