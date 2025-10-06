@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useToast } from '../hooks/useToast';
+import MBWayModal from './MBWayModal';
 
 interface BibleVerse {
   text: string;
@@ -9,9 +10,10 @@ interface BibleVerse {
 const VerseSection: React.FC = () => {
   const [currentVerse, setCurrentVerse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isMBWayModalOpen, setIsMBWayModalOpen] = useState(false);
 
   // Hook de notificações
-  const { success, showToast } = useToast();
+  const { showToast } = useToast();
 
   // Versículos locais como fallback
   const fallbackVerses = useMemo(() => [
@@ -112,78 +114,169 @@ const VerseSection: React.FC = () => {
   };
 
   const openMBWay = async (phoneNumber: string) => {
-    // Mostra toast inicial bonitinho com duração curta
-    showToast({
-      type: 'info',
-      title: 'MB WAY',
-      message: 'Tentando abrir o app automaticamente...',
-      duration: 3000
-    });
-
     // Copia o número para a área de transferência primeiro
     try {
       await navigator.clipboard.writeText(phoneNumber);
-      success('Número copiado!', `${phoneNumber} está na área de transferência.`);
     } catch {
       // Fallback se clipboard não funcionar
       console.log(`Número copiado: ${phoneNumber}`);
     }
 
-    // Detecta o sistema operacional
+    // Detecta o sistema operacional e navegador
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     const isAndroid = /Android/.test(navigator.userAgent);
+    const isChrome = /Chrome/.test(navigator.userAgent);
+    const isFirefox = /Firefox/.test(navigator.userAgent);
+    const isSafari = /Safari/.test(navigator.userAgent) && !isChrome;
+    const isMobile = isIOS || isAndroid;
 
-    // Define o deep link baseado no SO
-    const deepLink = `mbway://pay?phone=${phoneNumber}`;
+    console.log('Ambiente MB WAY detectado:', {
+      isIOS, isAndroid, isChrome, isFirefox, isSafari, userAgent: navigator.userAgent
+    });
 
-    // Tenta abrir o app primeiro (silenciosamente)
-    const openAppAttempt = () => {
-      try {
-        if (isIOS) {
-          // iOS: location.href funciona bem
-          window.location.href = deepLink;
-        } else if (isAndroid) {
-          // Android: tenta múltiplas abordagens
-          window.location.href = deepLink;
-          // Fallback com intent
-          setTimeout(() => {
-            window.location.href = `intent://pay?phone=${phoneNumber}#Intent;scheme=mbway;package=com.pt.mbway;S.browser_fallback_url=https%3A%2F%2Fwww.mbway.pt%2F;end`;
-          }, 100);
-        } else {
-          // Desktop: abre em nova aba
-          window.open(deepLink, '_blank');
+    // Múltiplas estratégias para abrir deep links (problemas comuns)
+    const attemptOpenApp = (url: string): Promise<boolean> => {
+      return new Promise((resolve) => {
+        const timeout = setTimeout(() => resolve(false), 2500);
+
+        try {
+          if (isIOS) {
+            // iOS: diferentes abordagens por navegador
+            if (isSafari) {
+              // Safari iOS: mais confiável
+              window.location.href = url;
+            } else {
+              // Chrome/Firefox iOS: tenta location.replace
+              window.location.replace(url);
+            }
+          } else if (isAndroid) {
+            // Android: estratégias específicas por navegador
+            if (isChrome) {
+              // Chrome Android: usa window.location.href
+              window.location.href = url;
+            } else if (isFirefox) {
+              // Firefox Android: usa iframe oculto (mais confiável)
+              const iframe = document.createElement('iframe');
+              iframe.style.display = 'none';
+              iframe.style.width = '1px';
+              iframe.style.height = '1px';
+              iframe.src = url;
+              document.body.appendChild(iframe);
+
+              // Remove iframe após tentativa
+              setTimeout(() => {
+                if (document.body.contains(iframe)) {
+                  document.body.removeChild(iframe);
+                }
+              }, 2000);
+            } else {
+              // Outros navegadores Android
+              try {
+                window.open(url, '_system');
+              } catch {
+                window.location.href = url;
+              }
+            }
+          } else {
+            // Desktop
+            window.open(url, '_blank');
+          }
+
+          // Detecta se o app abriu (página ficou em background)
+          const checkIfAppOpened = () => {
+            if (document.hidden || document.visibilityState === 'hidden') {
+              clearTimeout(timeout);
+              resolve(true);
+            }
+          };
+
+          document.addEventListener('visibilitychange', checkIfAppOpened, { once: true });
+
+        } catch (error) {
+          console.log('Erro ao tentar abrir MB WAY:', error);
+          clearTimeout(timeout);
+          resolve(false);
         }
-      } catch (error) {
-        console.log('Erro ao tentar abrir MB WAY:', error);
-      }
+      });
     };
 
-    // Abre o app primeiro
-    openAppAttempt();
+    // URLs alternativas para tentar (deep links têm problemas de compatibilidade)
+    const urlsToTry = [
+      // URL oficial do MB WAY
+      `mbway://pay?phone=${phoneNumber}`,
 
-    // Timeout para mostrar instruções se o app não abriu
-    setTimeout(() => {
-      // Verifica se ainda estamos na mesma página (app não abriu)
-      if (document.hasFocus()) {
+      // Intent Android (mais específico)
+      `intent://pay?phone=${phoneNumber}#Intent;scheme=mbway;package=pt.sibs.mbway;S.browser_fallback_url=https%3A%2F%2Fwww.mbway.pt;end`,
+
+      // Apenas abrir o app (fallback)
+      `mbway://`,
+
+      // Versão alternativa do intent
+      `intent://pay?phone=${phoneNumber}#Intent;scheme=mbway;action=android.intent.action.VIEW;package=pt.sibs.mbway;end`
+    ];
+
+    // Tenta múltiplas abordagens
+    let appOpened = false;
+    for (const url of urlsToTry) {
+      console.log('Tentando MB WAY URL:', url);
+      appOpened = await attemptOpenApp(url);
+
+      if (appOpened) {
+        console.log('✅ MB WAY provavelmente abriu com URL:', url);
+        break;
+      }
+
+      // Pequena pausa entre tentativas
+      await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
+    // Feedback baseado no resultado da tentativa
+    if (isMobile) {
+      if (appOpened) {
         showToast({
-          type: 'info',
-          title: 'MB WAY não abriu?',
-          message: 'Abra o app manualmente e cole o número copiado.',
+          type: 'success',
+          title: 'MB WAY aberto!',
+          message: 'Confirme o pagamento no aplicativo.',
+          duration: 4000
+        });
+      } else {
+        showToast({
+          type: 'warning',
+          title: 'App não abriu automaticamente',
+          message: `${phoneNumber} copiado - Abra o MB WAY manualmente para confirmar seu dízimo/oferta.`,
           duration: 8000,
           action: {
-            label: 'Ver instruções',
-            onClick: () => {
-              showToast({
-                type: 'info',
-                title: '📱 Instruções MB WAY',
-                message: '1. Abra o app MB WAY\n2. Cole o número copiado\n3. Confirme seu dízimo/oferta\n\n💚 Obrigado pela contribuição!',
-                duration: 10000
-              });
+            label: 'Copiar número',
+            onClick: async () => {
+              try {
+                await navigator.clipboard.writeText(phoneNumber);
+                showToast({
+                  type: 'success',
+                  title: 'Número copiado!',
+                  message: phoneNumber,
+                  duration: 2000
+                });
+              } catch {
+                showToast({
+                  type: 'error',
+                  title: 'Erro',
+                  message: 'Não foi possível copiar automaticamente.',
+                  duration: 3000
+                });
+              }
             }
           }
         });
       }
-    }, 2000); // 2 segundos de timeout
+    } else {
+      // Desktop
+      showToast({
+        type: 'info',
+        title: 'MB WAY',
+        message: appOpened ? 'App provavelmente aberto!' : 'Tentativa concluída - verifique se o app abriu.',
+        duration: 3000
+      });
+    }
   };
 
   return (
@@ -245,16 +338,31 @@ const VerseSection: React.FC = () => {
         <div className="bg-white/5 rounded-2xl p-4">
           <h3 className="font-medium text-white/90">MB WAY</h3>
           <p className="text-white/80 text-sm">Pagamento rápido e seguro.</p>
-          <button
-            onClick={() => openMBWay('965169925')}
-            className="mt-2 text-sm px-3 py-1.5 bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center gap-2"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <text x="12" y="8" font-size="9" font-weight="bold" text-anchor="middle" fill="currentColor">MB</text>
-              <text x="12" y="18" font-size="9" font-weight="bold" text-anchor="middle" fill="currentColor">WAY</text>
-            </svg>
-            Pagar com MB WAY
-          </button>
+          <div className="mt-2 space-y-2">
+            {/* Opção avançada - Modal */}
+            {/*<button
+              onClick={() => setIsMBWayModalOpen(true)}
+              className="w-full text-sm px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <text x="12" y="8" font-size="9" font-weight="bold" text-anchor="middle" fill="currentColor">MB</text>
+                <text x="12" y="18" font-size="9" font-weight="bold" text-anchor="middle" fill="currentColor">WAY</text>
+              </svg>
+              Solicitar Pagamento
+            </button>*/}
+
+            {/* Opção tradicional - Deep Link */}
+            <button
+              onClick={() => openMBWay('965169925')}
+              className="w-full text-sm px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              Abrir App MB WAY
+            </button>
+          </div>
         </div>
       </div>
       
@@ -294,6 +402,12 @@ const VerseSection: React.FC = () => {
           </p>
         </div>
       </div>
+
+      {/* Modal MB WAY */}
+      <MBWayModal
+        isOpen={isMBWayModalOpen}
+        onClose={() => setIsMBWayModalOpen(false)}
+      />
     </section>
   );
 };

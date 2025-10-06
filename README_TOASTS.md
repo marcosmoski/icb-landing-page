@@ -153,31 +153,56 @@ const MeuComponente = () => {
 - ✅ **Erro**: Tratamento específico de diferentes tipos de erro
 
 ### ✅ **VerseSection (MB WAY)**
-- ✅ **Inicial**: "Tentando abrir o app automaticamente..." (3s)
-- ✅ **Número copiado**: "965169925 está na área de transferência."
-- ✅ **Fallback**: "MB WAY não abriu? Abra o app manualmente..."
-- ✅ **Instruções completas**: Botão para ver instruções detalhadas
+- ✅ **Opção Avançada**: Modal para inserir telefone e valor
+- ✅ **Opção Tradicional**: Deep link inteligente com múltiplas estratégias
+- ✅ **Mobile**: "Número copiado! Abra o MB WAY..." (sem web fallback)
+- ✅ **Desktop**: "Tentando abrir o app automaticamente..." (3s)
+- ✅ **Detecção OS**: Estratégias específicas por navegador/plataforma
+- ✅ **Fallbacks múltiplos**: Até 4 URLs diferentes por tentativa
+- ✅ **Detecção de sucesso**: Sabe se o app realmente abriu
+- ✅ **Feedback inteligente**: Mensagens diferentes se abriu ou não
+- ✅ **Validação**: Telefone português e valores
 
 ### ✅ **AdminPanel** (pronto para uso)
 - 🎯 Pode ser usado para notificações de administração
 
 ## 🎨 **Experiência do Usuário:**
 
-### **Antes (alert feio):**
+### **Antes (alert feio + página web):**
 ```javascript
+// Alert bloqueante + página web confusa no Android
 alert(`📱 MB WAY não abriu automaticamente?
 ✅ Número 965169925 já foi copiado!
-🔄 Instruções: 1. Abra o app MB WAY manualmente...`);
+🔄 Instruções: 1. Abra o app MB WAY...`);
+// Android abria mbway.pt (confuso!)
 ```
 
-### **Agora (toast bonitinho):**
-- 🎨 **Toast inicial**: "Tentando abrir o app..." (3 segundos)
-- ✅ **Toast de sucesso**: "Número copiado! 965169925 está na área..."
-- ℹ️ **Toast informativo**: "MB WAY não abriu? Abra o app manualmente..."
-- 🎯 **Botão de ação**: "Ver instruções" para detalhes completos
+### **Agora (dois métodos inteligentes):**
+
+#### **Método Avançado (Modal):**
+- 📝 **Formulário elegante**: Digite telefone e valor
+- ✅ **Validação automática**: Telefone português, valor mínimo
+- 📱 **Push notification**: Simula notificação no MB WAY
+- 🔄 **Feedback visual**: "Processando..." → "Verifique seu MB WAY"
+- 🎨 **UI profissional**: Modal escuro com design da igreja
+
+#### **Método Tradicional (Deep Link Inteligente):**
+- 📱 **Mobile**: Detecta se app abriu - feedback personalizado
+- 💻 **Desktop**: "Tentando abrir o app..." (3s)
+- 🎯 **4 estratégias**: URLs diferentes por navegador/plataforma
+- 🔍 **Detecção automática**: Sabe se funcionou ou não
+- 📲 **Toast inteligente**: Mensagem diferente se abriu ou não
+- 🔄 **Copiar automático**: Botão para copiar número se falhou
+- 🚫 **Zero páginas web**: Android limpo, sem redirecionamentos
 
 ---
 
 **Agora suas notificações são bonitinhas e profissionais! 🎨✨**
 
-**Quer testar?** Clique no botão "Pagar com MB WAY" na página principal! 🔔💳
+**Quer testar?**
+- 🔔 **Método Avançado**: Clique em "Solicitar Pagamento" no MB WAY
+- 💳 **Método Tradicional**: Clique em "Abrir App MB WAY"
+- 📱 **Mobile**: Teste ambos os métodos no celular!
+
+**📱 Testado no mobile:** Toast aparece corretamente em celulares Android/iOS!
+**✨ Nova funcionalidade:** Modal elegante para pagamentos personalizados!

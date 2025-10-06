@@ -66,10 +66,10 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
   return (
     <div
       className={`
-        fixed top-4 right-4 z-50 max-w-sm w-full
+        w-full max-w-sm
         transform transition-all duration-300 ease-out
-        ${isVisible && !isExiting ? 'translate-x-0 opacity-100 scale-100' : 'translate-x-full opacity-0 scale-95'}
-        ${isExiting ? 'translate-x-full opacity-0 scale-95' : ''}
+        ${isVisible && !isExiting ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-full opacity-0 scale-95'}
+        ${isExiting ? '-translate-y-full opacity-0 scale-95' : ''}
       `}
     >
       <div className={`
@@ -167,12 +167,14 @@ const ToastContainer: React.FC = () => {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed top-0 right-0 z-50 pointer-events-none">
-      {toasts.map((toast) => (
-        <div key={toast.id} className="pointer-events-auto mb-2">
-          <ToastItem toast={toast} onRemove={removeToast} />
-        </div>
-      ))}
+    <div className="fixed top-0 left-0 right-0 z-[10000] pointer-events-none px-4 md:px-0 md:left-auto md:right-4 md:top-4 md:w-auto">
+      <div className="flex flex-col items-center md:items-end gap-2">
+        {toasts.map((toast) => (
+          <div key={toast.id} className="pointer-events-auto w-full md:w-auto">
+            <ToastItem toast={toast} onRemove={removeToast} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
