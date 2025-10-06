@@ -132,7 +132,7 @@ const VerseSection: React.FC = () => {
   function buildAndroidIntentUrl(phoneNumber: string) {
     // Intent SEM fallback automático - vamos controlar o fallback via timeout
     return (
-      'intent://pay?phone=' + phoneNumber + '#Intent;' +
+      'intent://mbway?phone=' + phoneNumber + '#Intent;' +
       'scheme=mbway;' +
       'package=pt.sibs.android.mbway;' +
       'end'
