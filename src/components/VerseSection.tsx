@@ -183,6 +183,17 @@ const VerseSection: React.FC = () => {
           window.open('https://www.mbway.pt/', '_blank');
         }
       } catch (error) {
+        showToast({
+          type: 'success',
+          title: 'MB WAY não aberto!',
+          message:  `Não conseguimos abrir o app MB WAY no seu dispositivo. 
+          No entanto, copiamos o número para você.
+          1. Abra o app MB WAY\n
+          2. Vá em "Enviar dinheiro"\n
+          3. Cole o número\n
+          4. Digite o valor`,
+          duration: 15000
+        });
         console.log('Erro ao tentar abrir MB WAY:', error);
       }
     
