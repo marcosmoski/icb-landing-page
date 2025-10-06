@@ -113,6 +113,34 @@ const VerseSection: React.FC = () => {
     }
   };
 
+  
+  // URLs oficiais (ajusta se quiser mandar p/ página tua antes)
+  const PLAY_URL = 'https://play.google.com/store/apps/details?id=pt.sibs.android.mbway';
+  const APPSTORE_URL = 'https://apps.apple.com/app/id918126133';
+
+  // Se um dia você tiver o scheme do MB WAY, põe aqui:
+  const MBWAY_SCHEME_URL = 'mbway://open'; // (exemplo; não é público oficialmente)
+
+  // Detecta o sistema operacional e navegador
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const isChrome = /Chrome/.test(navigator.userAgent);
+  const isFirefox = /Firefox/.test(navigator.userAgent);
+  const isSafari = /Safari/.test(navigator.userAgent) && !isChrome;
+  const isMobile = isIOS || isAndroid;
+
+  function buildAndroidIntentUrl(fallback: string, phoneNumber: string) {
+    // você pode trocar "open" por outra rota se existir
+    // importante: manter scheme e package
+    return (
+      'intent://open?phone=' + phoneNumber + '#Intent;' +
+      'scheme=mbway;' +
+      'package=pt.sibs.android.mbway;' +
+      'S.browser_fallback_url=' + encodeURIComponent(fallback) + ';' +
+      'end'
+    );
+  }
+
   const openMBWay = async (phoneNumber: string) => {
     // Copia o número para a área de transferência primeiro
     try {
@@ -122,113 +150,77 @@ const VerseSection: React.FC = () => {
       console.log(`Número copiado: ${phoneNumber}`);
     }
 
-    // Detecta o sistema operacional e navegador
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isAndroid = /Android/.test(navigator.userAgent);
-    const isChrome = /Chrome/.test(navigator.userAgent);
-    const isFirefox = /Firefox/.test(navigator.userAgent);
-    const isSafari = /Safari/.test(navigator.userAgent) && !isChrome;
-    const isMobile = isIOS || isAndroid;
-
     console.log('Ambiente MB WAY detectado:', {
       isIOS, isAndroid, isChrome, isFirefox, isSafari, userAgent: navigator.userAgent
     });
 
-    // Múltiplas estratégias para abrir deep links (problemas comuns)
-    const attemptOpenApp = (url: string): Promise<boolean> => {
-      return new Promise((resolve) => {
-        const timeout = setTimeout(() => resolve(false), 2500);
+    // Usa a lógica do usuário com detecção de abertura de app
+    const appOpened = await new Promise<boolean>((resolve) => {
+      let resolved = false;
 
-        try {
-          if (isIOS) {
-            // iOS: diferentes abordagens por navegador
-            if (isSafari) {
-              // Safari iOS: mais confiável
-              window.location.href = url;
-            } else {
-              // Chrome/Firefox iOS: tenta location.replace
-              window.location.replace(url);
-            }
-          } else if (isAndroid) {
-            // Android: estratégias específicas por navegador
-            if (isChrome) {
-              // Chrome Android: usa window.location.href
-              window.location.href = url;
-            } else if (isFirefox) {
-              // Firefox Android: usa iframe oculto (mais confiável)
-              const iframe = document.createElement('iframe');
-              iframe.style.display = 'none';
-              iframe.style.width = '1px';
-              iframe.style.height = '1px';
-              iframe.src = url;
-              document.body.appendChild(iframe);
+      const cleanup = () => {
+        document.removeEventListener('visibilitychange', onHidden, { capture: true } as EventListenerOptions);
+        window.removeEventListener('pagehide', onHidden, { capture: true } as EventListenerOptions);
+        window.removeEventListener('blur', onHidden, { capture: true } as EventListenerOptions);
+      };
 
-              // Remove iframe após tentativa
-              setTimeout(() => {
-                if (document.body.contains(iframe)) {
-                  document.body.removeChild(iframe);
-                }
-              }, 2000);
-            } else {
-              // Outros navegadores Android
-              try {
-                window.open(url, '_system');
-              } catch {
-                window.location.href = url;
-              }
-            }
-          } else {
-            // Desktop
-            window.open(url, '_blank');
-          }
+      const finish = (ok: boolean) => {
+        if (resolved) return;
+        resolved = true;
+        cleanup();
+        resolve(ok);
+      };
 
-          // Detecta se o app abriu (página ficou em background)
-          const checkIfAppOpened = () => {
-            if (document.hidden || document.visibilityState === 'hidden') {
-              clearTimeout(timeout);
-              resolve(true);
-            }
-          };
-
-          document.addEventListener('visibilitychange', checkIfAppOpened, { once: true });
-
-        } catch (error) {
-          console.log('Erro ao tentar abrir MB WAY:', error);
-          clearTimeout(timeout);
-          resolve(false);
+      const onHidden = () => {
+        // se a página foi para background logo após o clique, assumimos que abriu o app
+        if (document.hidden || document.visibilityState === 'hidden') {
+          finish(true);
         }
-      });
-    };
+      };
 
-    // URLs alternativas para tentar (deep links têm problemas de compatibilidade)
-    const urlsToTry = [
-      // URL oficial do MB WAY
-      `mbway://pay?phone=${phoneNumber}`,
+      document.addEventListener('visibilitychange', onHidden, { once: true, capture: true });
+      window.addEventListener('pagehide', onHidden, { once: true, capture: true });
+      window.addEventListener('blur', onHidden, { once: true, capture: true });
 
-      // Intent Android (mais específico)
-      `intent://pay?phone=${phoneNumber}#Intent;scheme=mbway;package=pt.sibs.mbway;S.browser_fallback_url=https%3A%2F%2Fwww.mbway.pt;end`,
+      // timeout de segurança: se nada acontecer, manda para fallback e retorna false
+      const FAILSAFE_MS = 3000;
+      const t = setTimeout(() => {
+        // iOS -> App Store; Android -> Play Store (se não usamos intent)
+        if (isIOS) {
+          window.location.href = APPSTORE_URL;
+        } else if (isAndroid && !isChrome) {
+          // Em navegadores Android não-Chrome, cair para Play Store
+          window.location.href = PLAY_URL;
+        }
+        finish(false);
+      }, FAILSAFE_MS);
 
-      // Apenas abrir o app (fallback)
-      `mbway://`,
+      try {
+        if (isAndroid) {
+          // Chrome/Samsung/Edge: melhor caminho é intent:// (com fallback)
+          const intentUrl = buildAndroidIntentUrl(PLAY_URL, phoneNumber);
+          window.location.href = intentUrl;
+          // Se o app abrir, o onHidden resolve true antes do timeout.
+          return;
+        }
 
-      // Versão alternativa do intent
-      `intent://pay?phone=${phoneNumber}#Intent;scheme=mbway;action=android.intent.action.VIEW;package=pt.sibs.mbway;end`
-    ];
+        if (isIOS) {
+          // Se você tiver um scheme válido, descomente a linha abaixo:
+           window.location.href = MBWAY_SCHEME_URL;
+          // Como o scheme não é público, vamos direto ao fallback após o timeout (acima).
+          // Em Safari iOS, se um dia houver universal link, funcionaria aqui.
+          return;
+        }
 
-    // Tenta múltiplas abordagens
-    let appOpened = false;
-    for (const url of urlsToTry) {
-      console.log('Tentando MB WAY URL:', url);
-      appOpened = await attemptOpenApp(url);
-
-      if (appOpened) {
-        console.log('✅ MB WAY provavelmente abriu com URL:', url);
-        break;
+        // Desktop: abre site oficial (ou tua página com instruções)
+        clearTimeout(t);
+        window.open('https://www.mbway.pt/', '_blank', 'noopener');
+        finish(false);
+      } catch (e) {
+        clearTimeout(t);
+        finish(false);
       }
-
-      // Pequena pausa entre tentativas
-      await new Promise(resolve => setTimeout(resolve, 300));
-    }
+    });
 
     // Feedback baseado no resultado da tentativa
     if (isMobile) {
@@ -278,6 +270,8 @@ const VerseSection: React.FC = () => {
       });
     }
   };
+
+
 
   return (
     <section className="card bg-white/5 backdrop-blur rounded-3xl p-6">
