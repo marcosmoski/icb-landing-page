@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdminCadastros, useCadastroStats, useCadastro } from '../store/features/cadastroHooks';
-import type { Cadastro } from '../store/features/types';
+import type { MembroIgreja } from '../lib/supabaseClient';
 
 // Componente de exemplo para painel administrativo
 const AdminPanel: React.FC = () => {
@@ -13,10 +13,13 @@ const AdminPanel: React.FC = () => {
   const { stats, isLoading: statsLoading } = useCadastroStats();
   const { atualizarCadastro, isUpdating } = useCadastro();
 
-  const handleStatusChange = async (cadastroId: number, newStatus: Cadastro['status']) => {
+  const handleStatusChange = async (cadastroId: number, newStatus: MembroIgreja['status']) => {
     try {
-      await atualizarCadastro({ id: cadastroId, status: newStatus }).unwrap();
-      // RTK Query automaticamente invalida o cache e refetch
+      const { error } = await atualizarCadastro(cadastroId, { status: newStatus });
+      if (error) {
+        console.error('Erro ao atualizar status:', error);
+        alert('Erro ao atualizar status. Tente novamente.');
+      }
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
       alert('Erro ao atualizar status. Tente novamente.');
@@ -137,7 +140,7 @@ const AdminPanel: React.FC = () => {
                     <td className="px-4 py-3">
                       <select
                         value={cadastro.status}
-                        onChange={(e) => handleStatusChange(cadastro.id, e.target.value as Cadastro['status'])}
+                        onChange={(e) => handleStatusChange(cadastro.id!, e.target.value as MembroIgreja['status'])}
                         disabled={isUpdating}
                         className="px-2 py-1 bg-white/10 border border-white/20 rounded text-white text-sm"
                       >
@@ -170,7 +173,7 @@ const AdminPanel: React.FC = () => {
           <div className="flex justify-center gap-2 mt-6">
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={!pagination.hasPrev}
+              disabled={currentPage <= 1}
               className="px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded-lg transition-colors"
             >
               Anterior
@@ -180,7 +183,7 @@ const AdminPanel: React.FC = () => {
             </span>
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={!pagination.hasNext}
+              disabled={currentPage >= pagination.totalPages}
               className="px-4 py-2 bg-white/10 hover:bg-white/20 disabled:opacity-50 rounded-lg transition-colors"
             >
               Próximo

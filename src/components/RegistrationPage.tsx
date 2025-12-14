@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../hooks/useToast';
+import { supabase } from '../lib/supabaseClient';
+import type { MembroIgreja } from '../lib/supabaseClient';
 
 // Tipo para dados do formulário
 interface RegistrationData {
@@ -23,8 +25,40 @@ const RegistrationPage: React.FC = () => {
   // Hook de notificações
   const { showToast } = useToast();
 
-  // Estado para simular loading
+  // Estado para loading
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [canSubmit, setCanSubmit] = useState(true);
+  const [remainingTime, setRemainingTime] = useState(0);
+
+  // Rate limiting - verificar se pode submeter
+  React.useEffect(() => {
+    const lastSubmitTime = localStorage.getItem('lastCadastroSubmit');
+    if (lastSubmitTime) {
+      const timeSinceLastSubmit = Date.now() - parseInt(lastSubmitTime);
+      const waitTime = 60000; // 60 segundos
+      
+      if (timeSinceLastSubmit < waitTime) {
+        setCanSubmit(false);
+        const remaining = Math.ceil((waitTime - timeSinceLastSubmit) / 1000);
+        setRemainingTime(remaining);
+        
+        // Countdown timer
+        const interval = setInterval(() => {
+          const newTimeSinceLastSubmit = Date.now() - parseInt(lastSubmitTime);
+          if (newTimeSinceLastSubmit >= waitTime) {
+            setCanSubmit(true);
+            setRemainingTime(0);
+            clearInterval(interval);
+          } else {
+            const newRemaining = Math.ceil((waitTime - newTimeSinceLastSubmit) / 1000);
+            setRemainingTime(newRemaining);
+          }
+        }, 1000);
+        
+        return () => clearInterval(interval);
+      }
+    }
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -36,23 +70,91 @@ const RegistrationPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Simular processamento
+    
+    // Verificar rate limiting
+    if (!canSubmit) {
+      showToast({
+        type: 'warning',
+        title: 'Aguarde um momento',
+        message: `Por favor, aguarde ${remainingTime} segundos antes de enviar outro cadastro.`,
+        duration: 3000
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
 
-    // Por enquanto, apenas mostrar toast de "Página em construção"
-    showToast({
-      type: 'info',
-      title: 'Página em construção',
-      message: 'O sistema de cadastro estará disponível em breve!',
-      duration: 5000
-    });
+    try {
+      // Preparar dados para inserção no Supabase
+      const membroData: Omit<MembroIgreja, 'id' | 'created_at' | 'updated_at'> = {
+        nome: formData.nome.trim(),
+        email: formData.email.trim().toLowerCase(),
+        telefone: formData.telefone.trim(),
+        data_nascimento: formData.dataNascimento || undefined,
+        mensagem: formData.mensagem?.trim() || undefined,
+        status: 'pendente'
+      };
 
-    // Simular delay e depois parar o loading
-    setTimeout(() => {
+      // Inserir no Supabase
+      const { error } = await supabase
+        .from('membros_igreja')
+        .insert([membroData])
+        .select();
+
+      if (error) {
+        console.error('Erro ao cadastrar:', error);
+        
+        // Verificar se é erro de email duplicado
+        if (error.code === '23505' || error.message.includes('duplicate')) {
+          showToast({
+            type: 'error',
+            title: 'Email já cadastrado',
+            message: 'Este email já está registrado em nosso sistema.',
+            duration: 5000
+          });
+        } else {
+          showToast({
+            type: 'error',
+            title: 'Erro ao cadastrar',
+            message: 'Ocorreu um erro ao processar seu cadastro. Por favor, tente novamente.',
+            duration: 5000
+          });
+        }
+        return;
+      }
+
+      // Sucesso! Salvar timestamp do último envio
+      localStorage.setItem('lastCadastroSubmit', Date.now().toString());
+      setCanSubmit(false);
+      setRemainingTime(60);
+
+      showToast({
+        type: 'success',
+        title: 'Cadastro realizado com sucesso! 🎉',
+        message: 'Em breve entraremos em contato com você.',
+        duration: 6000
+      });
+
+      // Limpar formulário
+      setFormData({
+        nome: '',
+        email: '',
+        telefone: '',
+        dataNascimento: '',
+        mensagem: ''
+      });
+
+    } catch (error) {
+      console.error('Erro inesperado:', error);
+      showToast({
+        type: 'error',
+        title: 'Erro inesperado',
+        message: 'Ocorreu um erro ao processar seu cadastro. Por favor, tente novamente.',
+        duration: 5000
+      });
+    } finally {
       setIsSubmitting(false);
-      console.log('Dados do cadastro:', formData);
-    }, 2000);
+    }
   };
 
   const isFormValid = formData.nome.trim() && formData.email.trim() && formData.telefone.trim();
@@ -182,13 +284,21 @@ const RegistrationPage: React.FC = () => {
             <div className="pt-4">
               <button
                 type="submit"
-                disabled={!isFormValid || isSubmitting}
+                disabled={!isFormValid || isSubmitting || !canSubmit}
                 className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-xl text-white font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                     Enviando...
+                  </>
+                ) : !canSubmit ? (
+                  <>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Aguarde {remainingTime}s
                   </>
                 ) : (
                   <>
@@ -201,6 +311,12 @@ const RegistrationPage: React.FC = () => {
                   </>
                 )}
               </button>
+              
+              {!canSubmit && remainingTime > 0 && (
+                <p className="mt-2 text-sm text-yellow-400 text-center">
+                  ⏱️ Para evitar spam, aguarde {remainingTime} segundos antes de enviar outro cadastro
+                </p>
+              )}
             </div>
           </form>
 

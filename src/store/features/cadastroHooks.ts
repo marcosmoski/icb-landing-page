@@ -1,67 +1,125 @@
-import { useCriarCadastroMutation, useBuscarCadastrosQuery, useAtualizarCadastroMutation } from './cadastroApi';
+import React from 'react';
+import { supabase } from '../lib/supabaseClient';
+import type { MembroIgreja } from '../lib/supabaseClient';
 
-// Hook customizado para funcionalidades de cadastro
+// Hook customizado para funcionalidades de cadastro com Supabase
 export const useCadastro = () => {
-  const [criarCadastro, createState] = useCriarCadastroMutation();
-  const [atualizarCadastro, updateState] = useAtualizarCadastroMutation();
+  const criarCadastro = async (data: Omit<MembroIgreja, 'id' | 'created_at' | 'updated_at'>) => {
+    const { data: result, error } = await supabase
+      .from('membros_igreja')
+      .insert([data])
+      .select();
+    
+    return { data: result, error };
+  };
+
+  const atualizarCadastro = async (id: number, updates: Partial<MembroIgreja>) => {
+    const { data, error } = await supabase
+      .from('membros_igreja')
+      .update(updates)
+      .eq('id', id)
+      .select();
+    
+    return { data, error };
+  };
 
   return {
-    // Mutations
     criarCadastro,
     atualizarCadastro,
-
-    // Estados de loading
-    isCreating: createState.isLoading,
-    isUpdating: updateState.isLoading,
-
-    // Estados de erro
-    createError: createState.error,
-    updateError: updateState.error,
-
-    // Estados de sucesso
-    createSuccess: createState.isSuccess,
-    updateSuccess: updateState.isSuccess,
-
-    // Funções utilitárias
-    resetCreateState: createState.reset,
-    resetUpdateState: updateState.reset,
+    isCreating: false,
+    isUpdating: false,
   };
 };
 
-// Hook para painel administrativo
+// Hook para buscar cadastros (admin)
 export const useAdminCadastros = (page = 1, limit = 50, status?: string) => {
-  const queryResult = useBuscarCadastrosQuery({ page, limit, status });
+  const [cadastros, setCadastros] = React.useState<MembroIgreja[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [total, setTotal] = React.useState(0);
+
+  React.useEffect(() => {
+    const fetchCadastros = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        let query = supabase
+          .from('membros_igreja')
+          .select('*', { count: 'exact' })
+          .order('created_at', { ascending: false })
+          .range((page - 1) * limit, page * limit - 1);
+
+        if (status) {
+          query = query.eq('status', status);
+        }
+
+        const { data, error: fetchError, count } = await query;
+
+        if (fetchError) {
+          setError(fetchError.message);
+        } else {
+          setCadastros(data || []);
+          setTotal(count || 0);
+        }
+      } catch (err) {
+        setError('Erro ao buscar cadastros');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCadastros();
+  }, [page, limit, status]);
 
   return {
-    ...queryResult,
-    cadastros: queryResult.data?.cadastros || [],
-    pagination: queryResult.data?.pagination || null,
-    hasNextPage: queryResult.data?.pagination?.hasNext || false,
-    hasPrevPage: queryResult.data?.pagination?.hasPrev || false,
+    cadastros,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+    isLoading,
+    error,
   };
 };
 
-// Hook para estatísticas rápidas
+// Hook para estatísticas de cadastros
 export const useCadastroStats = () => {
-  // Buscar todos os cadastros para estatísticas
-  const { data, isLoading } = useBuscarCadastrosQuery({ limit: 1000 });
-
-  const stats = data ? {
-    total: data.pagination?.total || 0,
-    pendentes: data.cadastros.filter(c => c.status === 'pendente').length,
-    contatados: data.cadastros.filter(c => c.status === 'contatado').length,
-    confirmados: data.cadastros.filter(c => c.status === 'confirmado').length,
-    cancelados: data.cadastros.filter(c => c.status === 'cancelado').length,
-  } : {
+  const [stats, setStats] = React.useState({
     total: 0,
     pendentes: 0,
     contatados: 0,
     confirmados: 0,
     cancelados: 0,
-  };
+  });
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  return {
-    stats,
-    isLoading,
-  };
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      setIsLoading(true);
+
+      const { data, error } = await supabase
+        .from('membros_igreja')
+        .select('status');
+
+      if (!error && data) {
+        setStats({
+          total: data.length,
+          pendentes: data.filter((c: MembroIgreja) => c.status === 'pendente').length,
+          contatados: data.filter((c: MembroIgreja) => c.status === 'contatado').length,
+          confirmados: data.filter((c: MembroIgreja) => c.status === 'confirmado').length,
+          cancelados: data.filter((c: MembroIgreja) => c.status === 'cancelado').length,
+        });
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchStats();
+  }, []);
+
+  return { stats, isLoading };
 };
+
