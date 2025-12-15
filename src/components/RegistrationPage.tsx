@@ -11,6 +11,7 @@ interface RegistrationData {
   telefone: string;
   dataNascimento?: string;
   mensagem?: string;
+  batizado: boolean;
 }
 
 const RegistrationPage: React.FC = () => {
@@ -19,7 +20,8 @@ const RegistrationPage: React.FC = () => {
     email: '',
     telefone: '',
     dataNascimento: '',
-    mensagem: ''
+    mensagem: '',
+    batizado: false
   });
 
   // Hook de notificações
@@ -61,10 +63,12 @@ const RegistrationPage: React.FC = () => {
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -92,6 +96,7 @@ const RegistrationPage: React.FC = () => {
         telefone: formData.telefone.trim(),
         data_nascimento: formData.dataNascimento || undefined,
         mensagem: formData.mensagem?.trim() || undefined,
+        batizado: formData.batizado,
         status: 'pendente'
       };
 
@@ -140,7 +145,8 @@ const RegistrationPage: React.FC = () => {
         email: '',
         telefone: '',
         dataNascimento: '',
-        mensagem: ''
+        mensagem: '',
+        batizado: false
       });
 
     } catch (error) {
@@ -264,6 +270,36 @@ const RegistrationPage: React.FC = () => {
                 />
               </div>
             </div>
+
+            <div className="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  id="batizado"
+                  name="batizado"
+                  checked={formData.batizado}
+                  onChange={handleInputChange}
+                  className="peer h-6 w-6 cursor-pointer appearance-none rounded-lg border-2 border-white/20 bg-white/5 transition-all checked:border-blue-500 checked:bg-blue-500 hover:border-white/40"
+                />
+                <svg
+                  className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 transition-opacity peer-checked:opacity-100"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <label htmlFor="batizado" className="cursor-pointer text-white/90 select-none">
+                Já sou batizado nas águas
+              </label>
+            </div>
+
 
             <div>
               <label htmlFor="mensagem" className="block text-sm font-medium text-white/90 mb-2">

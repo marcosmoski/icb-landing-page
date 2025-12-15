@@ -19,6 +19,7 @@ export interface MembroIgreja {
   telefone: string;
   data_nascimento?: string;
   mensagem?: string;
+  batizado?: boolean;
   status?: 'pendente' | 'contatado' | 'confirmado' | 'cancelado';
   created_at?: string;
   updated_at?: string;
