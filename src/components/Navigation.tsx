@@ -22,7 +22,7 @@ const Navigation: React.FC = () => {
             <img
               src="/icb-logo.png"
               alt="ICB Gaia Logo"
-              className="w-10 h-10 rounded-full ring-2 ring-white/20"
+              className="w-14 h-14 rounded-full ring-2 ring-white/20"
             />
             <div className="hidden sm:block">
               <h1 className="text-lg font-bold text-white">ICB Gaia</h1>

@@ -4,7 +4,6 @@ const HomePage: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const carouselImages = [
-    { src: '/icb-logo.png', alt: 'Logo ICB Gaia', caption: 'Igreja Casa da Bênção' },
     { src: '/pastor-jaider.jpg', alt: 'Pastor Jaider', caption: 'Pastor Jaider' },
     { src: '/pastora-regiane.jpg', alt: 'Pastora Regiane', caption: 'Pastora Regiane Carvalho' },
   ];
@@ -30,7 +29,7 @@ const HomePage: React.FC = () => {
       {/* Hero Section com Carrossel */}
       <section className="relative h-[600px] overflow-hidden">
         {/* Carrossel de Imagens */}
-        <div className="relative h-full">
+        <div className="relative h-full bg-gray-900">
           {carouselImages.map((image, index) => (
             <div
               key={index}
@@ -41,7 +40,7 @@ const HomePage: React.FC = () => {
               <img
                 src={image.src}
                 alt={image.alt}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-gray-950"></div>
             </div>
