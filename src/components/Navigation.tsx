@@ -19,11 +19,13 @@ const Navigation: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo e Nome */}
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <img
-              src="/icb-logo.png"
-              alt="ICB Gaia Logo"
-              className="w-14 h-14 rounded-full ring-2 ring-white/20"
-            />
+            <div className="w-14 h-14 flex-shrink-0">
+              <img
+                src="/icb-logo.png"
+                alt="ICB Gaia Logo"
+                className="w-full h-full object-contain rounded-full ring-2 ring-white/20"
+              />
+            </div>
             <div className="hidden sm:block">
               <h1 className="text-lg font-bold text-white">ICB Gaia</h1>
               <p className="text-xs text-white/60">Igreja Casa da Bênção</p>

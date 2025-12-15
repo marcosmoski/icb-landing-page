@@ -125,10 +125,36 @@ const HomePage: React.FC = () => {
                 <svg className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                <div>
-                  <p className="text-white font-medium">Endereço</p>
+                <div className="flex-1">
+                  <p className="text-white font-medium mb-1">Endereço</p>
                   <p className="text-white/70">Rua João de Deus, 191</p>
-                  <p className="text-white/70">Vila Nova de Gaia, Portugal</p>
+                  <p className="text-white/70 mb-4">Vila Nova de Gaia, Portugal</p>
+                  
+                  {/* Botões de Navegação */}
+                  <div className="flex flex-wrap gap-3">
+                    <a
+                      href="https://www.google.com/maps/search/?api=1&query=Rua+João+de+Deus+191+Vila+Nova+de+Gaia"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                      </svg>
+                      Abrir no Google Maps
+                    </a>
+                    <a
+                      href="https://waze.com/ul?q=Rua+João+de+Deus+191+Vila+Nova+de+Gaia"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      </svg>
+                      Abrir no Waze
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
