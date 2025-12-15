@@ -1,0 +1,10 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://icbgaia.com/sitemap.xml
+
+# Disallow admin pages
+User-agent: *
+Disallow: /admin
