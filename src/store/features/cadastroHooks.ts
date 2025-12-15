@@ -7,8 +7,7 @@ export const useCadastro = () => {
   const criarCadastro = async (data: Omit<MembroIgreja, 'id' | 'created_at' | 'updated_at'>) => {
     const { data: result, error } = await supabase
       .from('membros_igreja')
-      .insert([data])
-      .select();
+      .insert([data]);
     
     return { data: result, error };
   };

@@ -95,11 +95,10 @@ const RegistrationPage: React.FC = () => {
         status: 'pendente'
       };
 
-      // Inserir no Supabase
+      // Inserir no Supabase (sem .select() para evitar erro RLS)
       const { error } = await supabase
         .from('membros_igreja')
-        .insert([membroData])
-        .select();
+        .insert([membroData]);
 
       if (error) {
         console.error('Erro ao cadastrar:', error);
