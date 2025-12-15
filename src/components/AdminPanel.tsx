@@ -126,6 +126,7 @@ const AdminPanel: React.FC = () => {
                   <th className="px-4 py-3 text-left">Nome</th>
                   <th className="px-4 py-3 text-left">Email</th>
                   <th className="px-4 py-3 text-left">Telefone</th>
+                  <th className="px-4 py-3 text-left">Batizado?</th>
                   <th className="px-4 py-3 text-left">Status</th>
                   <th className="px-4 py-3 text-left">Data</th>
                   <th className="px-4 py-3 text-left">Ações</th>
@@ -137,6 +138,17 @@ const AdminPanel: React.FC = () => {
                     <td className="px-4 py-3">{cadastro.nome}</td>
                     <td className="px-4 py-3">{cadastro.email}</td>
                     <td className="px-4 py-3">{cadastro.telefone}</td>
+                    <td className="px-4 py-3">
+                      {cadastro.batizado ? (
+                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                          Sim
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
+                          Não
+                        </span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <select
                         value={cadastro.status}

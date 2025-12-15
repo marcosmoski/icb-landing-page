@@ -4,6 +4,8 @@ import HomePage from './components/HomePage';
 import DizimosPage from './components/DizimosPage';
 import RegistrationPage from './components/RegistrationPage';
 import AdminPanel from './components/AdminPanel';
+import AdminLayout from './components/AdminLayout';
+import AdminLogin from './components/AdminLogin';
 import Footer from './components/Footer';
 
 function App() {
@@ -16,7 +18,12 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/dizimos" element={<DizimosPage />} />
           <Route path="/cadastro" element={<RegistrationPage />} />
-          <Route path="/admin" element={<AdminPanel />} />
+          
+          {/* Rotas Admin */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminPanel />} />
+          </Route>
         </Routes>
 
         <Footer />
