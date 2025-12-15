@@ -1,6 +1,6 @@
 import React from 'react';
-import { supabase } from '../lib/supabaseClient';
-import type { MembroIgreja } from '../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
+import type { MembroIgreja } from '@/lib/supabaseClient';
 
 // Hook customizado para funcionalidades de cadastro com Supabase
 export const useCadastro = () => {
@@ -105,12 +105,13 @@ export const useCadastroStats = () => {
         .select('status');
 
       if (!error && data) {
+        const membros = data as Array<{ status: string }>;
         setStats({
-          total: data.length,
-          pendentes: data.filter((c: MembroIgreja) => c.status === 'pendente').length,
-          contatados: data.filter((c: MembroIgreja) => c.status === 'contatado').length,
-          confirmados: data.filter((c: MembroIgreja) => c.status === 'confirmado').length,
-          cancelados: data.filter((c: MembroIgreja) => c.status === 'cancelado').length,
+          total: membros.length,
+          pendentes: membros.filter(c => c.status === 'pendente').length,
+          contatados: membros.filter(c => c.status === 'contatado').length,
+          confirmados: membros.filter(c => c.status === 'confirmado').length,
+          cancelados: membros.filter(c => c.status === 'cancelado').length,
         });
       }
 

@@ -151,7 +151,7 @@ const AdminPanel: React.FC = () => {
                       </select>
                     </td>
                     <td className="px-4 py-3 text-sm text-white/70">
-                      {new Date(cadastro.created_at).toLocaleDateString('pt-PT')}
+                      {cadastro.created_at ? new Date(cadastro.created_at).toLocaleDateString('pt-PT') : '-'}
                     </td>
                     <td className="px-4 py-3">
                       <button
