@@ -1,86 +1,107 @@
-# Fix para Erro 401 - RLS Policy
+# 🔧 Como Corrigir o Erro 401 - Passo a Passo
 
-## Problema
+## O Problema
 
-Ao tentar cadastrar um novo membro, você recebe o erro **401 Unauthorized**. Isso acontece porque as políticas de Row Level Security (RLS) do Supabase estão bloqueando o INSERT público.
+Você está recebendo erro **401 Unauthorized** ao tentar cadastrar porque as políticas RLS (Row Level Security) do Supabase estão bloqueando o INSERT público.
 
-## Solução
+## Solução Rápida (3 minutos)
 
-Execute o SQL abaixo no **Supabase SQL Editor** para corrigir as políticas RLS:
+### 1. Abra o Supabase SQL Editor
 
-### Passo a Passo
+1. Acesse seu projeto no Supabase: https://supabase.com
+2. No menu lateral, clique em **SQL Editor**
+3. Clique em **New query**
 
-1. Acesse seu projeto no Supabase
-2. Vá em **SQL Editor** (menu lateral)
-3. Clique em "New query"
-4. Cole o conteúdo do arquivo [`supabase_fix_rls.sql`](file:///Users/marcosalbertocosmoskifilho/Documents/mvps/icb-landing-page/supabase_fix_rls.sql)
-5. Clique em **Run**
-6. Aguarde a confirmação "Success"
+### 2. Execute o Script de Correção
 
-### O que o script faz
+1. Abra o arquivo [`supabase_fix_rls.sql`](file:///Users/marcosalbertocosmoskifilho/Documents/mvps/icb-landing-page/supabase_fix_rls.sql)
+2. **Copie TODO o conteúdo** do arquivo
+3. **Cole no SQL Editor** do Supabase
+4. Clique em **Run** (ou pressione Ctrl/Cmd + Enter)
+5. Aguarde a mensagem **"Success. No rows returned"**
 
-- ✅ Remove as políticas antigas que estavam causando o erro 401
-- ✅ Cria nova política permitindo INSERT para usuários anônimos (`anon`)
-- ✅ Mantém SELECT/UPDATE/DELETE apenas para usuários autenticados (admin)
-- ✅ Garante que o RLS está ativo
+### 3. Teste o Cadastro
 
-## Proteção contra Spam
-
-Para evitar que o formulário seja usado para spam, implementamos **rate limiting** no frontend:
-
-- ⏱️ **Cooldown de 60 segundos** entre cadastros
-- 💾 Usa `localStorage` para rastrear o último envio
-- 🔔 Mostra contador visual no botão
-- ⚠️ Exibe mensagem de aviso se tentar enviar antes do tempo
-
-### Como funciona
-
-1. Usuário preenche e envia o formulário
-2. Timestamp é salvo no `localStorage`
-3. Botão fica desabilitado por 60 segundos
-4. Contador regressivo é exibido: "Aguarde 60s"
-5. Após 60 segundos, o botão é reativado
-
-## Testando
-
-Após executar o SQL fix:
-
-1. Acesse http://localhost:5173/cadastro
+1. Volte para http://localhost:5173/cadastro
 2. Preencha o formulário
 3. Clique em "Cadastrar"
-4. Você deve ver a mensagem de sucesso ✅
-5. Tente cadastrar novamente - verá o contador de 60s
+4. ✅ Deve funcionar agora!
 
-## Verificar no Supabase
+## O que o Script Faz
 
-1. Vá em **Table Editor** → **membros_igreja**
-2. Você deve ver o novo registro
-3. O status deve estar como "pendente"
+O script faz 7 passos:
 
-## Troubleshooting
+1. ✅ Desabilita RLS temporariamente
+2. ✅ Remove TODAS as políticas antigas (que estavam causando o erro)
+3. ✅ Reabilita RLS
+4. ✅ Cria política para **INSERT público** (permite cadastro sem login)
+5. ✅ Cria política para **SELECT autenticado** (apenas admin vê os dados)
+6. ✅ Cria política para **UPDATE autenticado** (apenas admin edita)
+7. ✅ Cria política para **DELETE autenticado** (apenas admin deleta)
 
-### Ainda recebo 401
+## Verificar se Funcionou
 
-Verifique se:
-- O SQL fix foi executado com sucesso
-- As variáveis de ambiente no `.env` estão corretas
-- Você está usando a `VITE_SUPABASE_ANON_KEY` (não a service_role key)
+Após executar o script, você pode verificar as políticas criadas:
 
-### O rate limiting não funciona
+1. No Supabase SQL Editor, execute:
 
-- Limpe o `localStorage` do navegador
-- Ou abra uma aba anônima para testar
-- O rate limiting é por navegador/dispositivo
-
-### Quero mudar o tempo de cooldown
-
-Edite o arquivo [`src/components/RegistrationPage.tsx`](file:///Users/marcosalbertocosmoskifilho/Documents/mvps/icb-landing-page/src/components/RegistrationPage.tsx):
-
-```typescript
-const waitTime = 60000; // 60 segundos (60000ms)
+```sql
+SELECT * FROM pg_policies WHERE tablename = 'membros_igreja';
 ```
 
-Altere para o valor desejado em milissegundos:
-- 30 segundos = 30000
-- 2 minutos = 120000
-- 5 minutos = 300000
+2. Você deve ver **4 políticas**:
+   - `allow_public_insert` - Permite cadastro público
+   - `allow_authenticated_select` - Apenas admin vê dados
+   - `allow_authenticated_update` - Apenas admin edita
+   - `allow_authenticated_delete` - Apenas admin deleta
+
+## Ainda não Funciona?
+
+### Verifique o `.env`
+
+Certifique-se de que o arquivo `.env` tem as credenciais corretas:
+
+```env
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=sua-chave-anon-aqui
+```
+
+**IMPORTANTE:** Use a **anon key**, NÃO a service_role key!
+
+### Como encontrar as credenciais
+
+1. No Supabase, vá em **Settings** → **API**
+2. Copie:
+   - **Project URL** → `VITE_SUPABASE_URL`
+   - **anon public** → `VITE_SUPABASE_ANON_KEY`
+
+### Reinicie o servidor
+
+Após alterar o `.env`:
+
+```bash
+# Pare o servidor (Ctrl+C)
+# Inicie novamente
+npm run dev
+```
+
+## Testando no Console do Navegador
+
+Você pode testar se a conexão com Supabase está funcionando:
+
+1. Abra o console do navegador (F12)
+2. Cole este código:
+
+```javascript
+console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+console.log('Supabase Key:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Configurada ✅' : 'Não configurada ❌');
+```
+
+3. Você deve ver a URL e "Configurada ✅"
+
+## Precisa de Ajuda?
+
+Se ainda não funcionar, me envie:
+- O erro exato que aparece no console do navegador (F12)
+- Screenshot do erro
+- Confirmação de que executou o script SQL
