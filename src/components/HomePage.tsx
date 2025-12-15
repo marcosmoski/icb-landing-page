@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import InstagramFeed from './InstagramFeed';
 
 const HomePage: React.FC = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -174,7 +175,7 @@ const HomePage: React.FC = () => {
               <div className="text-3xl mb-3">🙏</div>
               <h3 className="text-xl font-bold text-white mb-2">Quartas-feiras</h3>
               <p className="text-2xl font-bold text-blue-400">20:30</p>
-              <p className="text-white/70 text-sm mt-2">Culto de Oração</p>
+              <p className="text-white/70 text-sm mt-2">Culto do Milagre</p>
             </div>
             <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center hover:bg-white/15 transition-colors">
               <div className="text-3xl mb-3">📖</div>
@@ -185,8 +186,8 @@ const HomePage: React.FC = () => {
             <div className="bg-white/10 backdrop-blur rounded-2xl p-6 text-center hover:bg-white/15 transition-colors">
               <div className="text-3xl mb-3">✨</div>
               <h3 className="text-xl font-bold text-white mb-2">Domingos</h3>
-              <p className="text-2xl font-bold text-blue-400">19:00</p>
-              <p className="text-white/70 text-sm mt-2">Culto de Celebração</p>
+              <p className="text-2xl font-bold text-blue-400">18:30</p>
+              <p className="text-white/70 text-sm mt-2">Oração as 18:30 e Culto as 19:00</p>
             </div>
           </div>
         </div>
@@ -232,6 +233,9 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Instagram Feed */}
+      <InstagramFeed />
 
       {/* Call to Action */}
       <section className="max-w-7xl mx-auto px-6 pb-16">
