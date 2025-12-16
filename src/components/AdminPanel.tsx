@@ -178,7 +178,6 @@ const AdminPanel: React.FC = () => {
                       </select>
                     </td>
                     <td className="px-4 py-3 text-sm text-white/70">
-                    <td className="px-4 py-3 text-sm text-white/70">
                       {cadastro.data_nascimento ? new Date(cadastro.data_nascimento).toLocaleDateString('pt-PT') : '-'}
                     </td>
                     <td className="px-4 py-3">
@@ -216,9 +215,6 @@ const AdminPanel: React.FC = () => {
             >
               Próximo
             </button>
-          </div>
-        )}
-      </main>
           </div>
         )}
       </main>
