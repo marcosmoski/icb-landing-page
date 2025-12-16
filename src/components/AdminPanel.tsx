@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAdminCadastros, useCadastroStats, useCadastro } from '../store/features/cadastroHooks';
 import type { MembroIgreja } from '../lib/supabaseClient';
+import { supabase } from '../lib/supabaseClient';
 
 // Componente de exemplo para painel administrativo
 const AdminPanel: React.FC = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedMembro, setSelectedMembro] = useState<MembroIgreja | null>(null);
@@ -41,6 +43,11 @@ const AdminPanel: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/admin/login');
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
@@ -71,7 +78,7 @@ const AdminPanel: React.FC = () => {
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-4">
               <img
-                src="./icblogo.png"
+                src="/icblogo.png"
                 alt="Logo Igreja"
                 className="w-12 h-12 rounded-xl ring-2 ring-white/20"
               />
@@ -81,12 +88,25 @@ const AdminPanel: React.FC = () => {
               </div>
             </Link>
           </div>
-          <Link
-            to="/"
-            className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors"
-          >
-            Voltar ao Site
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors"
+            >
+              Voltar ao Site
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-600/30 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Sair
+            </button>
+          </div>
         </div>
       </header>
 

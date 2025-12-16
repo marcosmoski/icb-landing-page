@@ -40,7 +40,7 @@ const AdminLogin: React.FC = () => {
       <div className="max-w-md w-full bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 shadow-xl">
         <div className="text-center mb-8">
           <img
-            src="./icblogo.png"
+            src="/icblogo.png"
             alt="Logo ICB"
             className="w-16 h-16 mx-auto rounded-xl ring-2 ring-white/20 mb-4"
           />
