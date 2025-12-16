@@ -21,7 +21,7 @@ const Navigation: React.FC = () => {
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="w-14 h-14 flex-shrink-0">
               <img
-                src="/icb-logo.png"
+                src="/icblogo.png"
                 alt="ICB Gaia Logo"
                 className="w-full h-full object-contain rounded-full ring-2 ring-white/20"
               />
