@@ -135,17 +135,19 @@ const PrayerRequestsPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const telefone = formData.telefone.trim();
-      const email = formData.email.trim();
+      const sanitizedData = validation.data;
+      const telefone = sanitizedData.telefone?.trim() || '';
+      const email = sanitizedData.email?.trim() || '';
+      const dataNascimento = sanitizedData.dataNascimento?.trim() || '';
 
       const payload = {
-        nome: formData.nome.trim(),
-        telefone: telefone || undefined,
-        email: email || undefined,
-        data_nascimento: formData.dataNascimento || undefined,
-        batizado: formData.batizado,
-        pedido_oracao: formData.pedidoOracao.trim(),
-        visita_tipo: formData.visitaTipo,
+        nome: sanitizedData.nome.trim(),
+        batizado: sanitizedData.batizado,
+        pedido_oracao: sanitizedData.pedidoOracao.trim(),
+        visita_tipo: sanitizedData.visitaTipo,
+        ...(telefone ? { telefone } : {}),
+        ...(email ? { email } : {}),
+        ...(dataNascimento ? { data_nascimento: dataNascimento } : {}),
       };
 
       const { error } = await criarPedidoOracao(payload);
@@ -166,13 +168,13 @@ const PrayerRequestsPage: React.FC = () => {
 
       const emailPayload: PrayerEmailPayload = {
         nome: payload.nome,
-        telefone: payload.telefone,
-        email: payload.email,
-        dataNascimento: payload.data_nascimento,
         batizado: payload.batizado,
         pedidoOracao: payload.pedido_oracao,
         visitaTipo: payload.visita_tipo,
         enviadoEm: new Date().toISOString(),
+        ...(telefone ? { telefone } : {}),
+        ...(email ? { email } : {}),
+        ...(dataNascimento ? { dataNascimento } : {}),
       };
 
       const notifyResult = await notificarPedidoPorEmail(emailPayload);
