@@ -90,6 +90,18 @@ const AdminPanel: React.FC = () => {
           </div>
           <div className="flex items-center gap-3">
             <Link
+              to="/admin"
+              className="px-4 py-2 bg-blue-600/30 border border-blue-500/40 rounded-lg text-sm font-medium"
+            >
+              Cadastros
+            </Link>
+            <Link
+              to="/admin/pedidos-oracao"
+              className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors"
+            >
+              Pedidos de oração
+            </Link>
+            <Link
               to="/"
               className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors"
             >

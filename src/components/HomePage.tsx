@@ -252,6 +252,12 @@ const HomePage: React.FC = () => {
               Fazer Cadastro
             </a>
             <a
+              href="/pedidos-oracao"
+              className="px-8 py-4 bg-amber-300 text-slate-900 rounded-xl font-bold hover:bg-amber-200 transition-colors"
+            >
+              Pedidos de Oração
+            </a>
+            <a
               href="/dizimos"
               className="px-8 py-4 bg-white/20 backdrop-blur text-white rounded-xl font-bold hover:bg-white/30 transition-colors"
             >

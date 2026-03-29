@@ -24,3 +24,32 @@ export interface MembroIgreja {
   created_at?: string;
   updated_at?: string;
 }
+
+export type PedidoOracaoStatus = 'novo' | 'em_atendimento' | 'atendido' | 'encerrado';
+export type PedidoOracaoVisita = 'sim' | 'nao' | 'visitar_igreja';
+
+export interface PedidoOracao {
+  id: number;
+  nome: string;
+  telefone?: string | null;
+  email?: string | null;
+  data_nascimento?: string;
+  batizado: boolean;
+  pedido_oracao: string;
+  visita_tipo: PedidoOracaoVisita;
+  status: PedidoOracaoStatus;
+  email_notificado_em?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface PrayerEmailPayload {
+  nome: string;
+  telefone?: string;
+  email?: string;
+  dataNascimento?: string;
+  batizado: boolean;
+  pedidoOracao: string;
+  visitaTipo: PedidoOracaoVisita;
+  enviadoEm: string;
+}

@@ -11,6 +11,7 @@ const Navigation: React.FC = () => {
     { path: '/', label: 'Home' },
     { path: '/dizimos', label: 'Dízimos' },
     { path: '/cadastro', label: 'Cadastro' },
+    { path: '/pedidos-oracao', label: 'Pedidos de oração', highlight: true },
   ];
 
   return (
@@ -41,6 +42,8 @@ const Navigation: React.FC = () => {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive(link.path)
                     ? 'bg-blue-600 text-white'
+                    : link.highlight
+                      ? 'bg-amber-500/20 text-amber-200 border border-amber-300/30 hover:bg-amber-500/30'
                     : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
               >
@@ -92,6 +95,8 @@ const Navigation: React.FC = () => {
                   className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     isActive(link.path)
                       ? 'bg-blue-600 text-white'
+                      : link.highlight
+                        ? 'bg-amber-500/20 text-amber-200 border border-amber-300/30 hover:bg-amber-500/30'
                       : 'text-white/80 hover:bg-white/10 hover:text-white'
                   }`}
                 >
