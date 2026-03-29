@@ -375,14 +375,14 @@ const RegistrationPage: React.FC = () => {
               Prefere falar diretamente? Ligue para nós:
             </p>
             <a
-              href="tel:965169925"
+              href="tel:+351910231171"
               className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-medium transition-colors"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <text x="12" y="8" font-size="9" font-weight="bold" text-anchor="middle" fill="currentColor">MB</text>
                 <text x="12" y="18" font-size="9" font-weight="bold" text-anchor="middle" fill="currentColor">WAY</text>
               </svg>
-              965 169 925
+              +351 910 231 171
             </a>
           </div>
         </div>
