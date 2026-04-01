@@ -1,0 +1,58 @@
+name: Seed GitHub Project Roadmap
+
+on:
+  workflow_dispatch:
+    inputs:
+      owner:
+        description: "GitHub username or organization (e.g. marcosmoski)"
+        required: true
+        type: string
+      project_title:
+        description: "Project title to create or reuse"
+        required: true
+        default: "Roadmap Sistema Igreja"
+        type: string
+      repo_full_name:
+        description: "owner/repo to create labels (optional, e.g. marcosmoski/icb-landing-page)"
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  seed:
+    name: Seed GitHub Project v2
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ secrets.PROJECTS_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: |
+          if ! command -v jq &>/dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq jq
+          fi
+          jq --version
+
+      - name: Verify gh CLI is available
+        run: gh --version
+
+      - name: Validate PROJECTS_TOKEN secret is set
+        run: |
+          if [[ -z "$GH_TOKEN" ]]; then
+            echo "::error::PROJECTS_TOKEN secret is not set. Add it in Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          echo "Token is set (length: ${#GH_TOKEN})"
+
+      - name: Run seed script
+        run: |
+          chmod +x tools/projects/seed-project.sh
+          tools/projects/seed-project.sh \
+            "${{ inputs.owner }}" \
+            "${{ inputs.project_title }}" \
+            "${{ inputs.repo_full_name }}"

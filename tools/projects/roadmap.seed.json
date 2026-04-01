@@ -1,0 +1,220 @@
+{
+  "project_title": "Roadmap Sistema Igreja",
+  "custom_fields": [
+    {
+      "name": "Roadmap Status",
+      "type": "SINGLE_SELECT",
+      "options": ["Backlog", "Planejado", "Em progresso", "Concluído", "Pausado"]
+    },
+    {
+      "name": "Module",
+      "type": "SINGLE_SELECT",
+      "options": ["Admin", "Cantina", "Estoque", "Manutenção", "Operação", "Pastoral", "Eventos", "Ideias", "Financeiro"]
+    },
+    {
+      "name": "Priority",
+      "type": "SINGLE_SELECT",
+      "options": ["High", "Medium", "Low"]
+    },
+    {
+      "name": "Effort",
+      "type": "SINGLE_SELECT",
+      "options": ["XS", "S", "M", "L", "XL"]
+    },
+    {
+      "name": "Type",
+      "type": "SINGLE_SELECT",
+      "options": ["Feature", "Tech Debt", "Bug"]
+    }
+  ],
+  "labels": [
+    { "name": "module:admin",      "color": "0075ca", "description": "Módulo Admin" },
+    { "name": "module:cantina",    "color": "e4e669", "description": "Módulo Cantina" },
+    { "name": "module:estoque",    "color": "d93f0b", "description": "Módulo Estoque" },
+    { "name": "module:manutencao", "color": "c5def5", "description": "Módulo Manutenção" },
+    { "name": "module:operacao",   "color": "bfd4f2", "description": "Módulo Operação" },
+    { "name": "module:pastoral",   "color": "1d76db", "description": "Módulo Pastoral" },
+    { "name": "module:eventos",    "color": "0e8a16", "description": "Módulo Eventos" },
+    { "name": "module:ideias",     "color": "e99695", "description": "Módulo Ideias" },
+    { "name": "module:financeiro", "color": "f9d0c4", "description": "Módulo Financeiro" },
+    { "name": "priority:high",     "color": "b60205", "description": "Prioridade alta" },
+    { "name": "priority:medium",   "color": "fbca04", "description": "Prioridade média" },
+    { "name": "priority:low",      "color": "0e8a16", "description": "Prioridade baixa" },
+    { "name": "type:feature",      "color": "84b6eb", "description": "Nova funcionalidade" },
+    { "name": "type:tech-debt",    "color": "e4e669", "description": "Dívida técnica" },
+    { "name": "type:bug",          "color": "ee0701", "description": "Correção de bug" }
+  ],
+  "items": [
+    {
+      "title": "Padronizar tabelas do painel admin",
+      "body": "Revisar e padronizar todas as tabelas exibidas no painel administrativo: paginação, filtros, ordenação e exportação consistentes em todos os módulos.",
+      "module": "Admin",
+      "priority": "High",
+      "effort": "M",
+      "type": "Tech Debt",
+      "roadmap_status": "Planejado"
+    },
+    {
+      "title": "Implementar permissões por role",
+      "body": "Criar sistema de controlo de acesso baseado em roles (RBAC): definir roles (super-admin, pastor, voluntário, membro), proteger rotas e ações sensíveis por permissão.",
+      "module": "Admin",
+      "priority": "High",
+      "effort": "L",
+      "type": "Feature",
+      "roadmap_status": "Planejado"
+    },
+    {
+      "title": "CRUD de produtos da cantina",
+      "body": "Criar, listar, editar e remover produtos disponíveis na cantina. Incluir campos: nome, descrição, preço, categoria, foto e disponibilidade.",
+      "module": "Cantina",
+      "priority": "High",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "CRUD de eventos/data da cantina",
+      "body": "Gerir os eventos nos quais a cantina estará ativa: criar sessões de venda associadas a datas/eventos da igreja, com menu específico por sessão.",
+      "module": "Cantina",
+      "priority": "High",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Fluxo de pedido com comprovante",
+      "body": "Implementar o fluxo completo de pedido pelo membro: selecionar produtos, confirmar pedido, gerar comprovante (QR code ou número de referência) e registar histórico.",
+      "module": "Cantina",
+      "priority": "High",
+      "effort": "L",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Tela admin de retirada de pedidos",
+      "body": "Interface para voluntários/administradores da cantina validarem a retirada do pedido: leitura de QR code ou busca por referência, marcar como entregue.",
+      "module": "Cantina",
+      "priority": "High",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "CRUD de categorias de estoque",
+      "body": "Criar e gerir categorias que organizam os itens de estoque (e.g., limpeza, copa, materiais de escritório).",
+      "module": "Estoque",
+      "priority": "Medium",
+      "effort": "S",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "CRUD de itens de estoque",
+      "body": "Cadastrar, editar, listar e remover itens do estoque com campos: nome, categoria, unidade, quantidade atual, localização e fornecedor.",
+      "module": "Estoque",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Movimentações de estoque",
+      "body": "Registar entradas e saídas de itens do estoque com rastreabilidade: quem movimentou, quantidade, data e motivo.",
+      "module": "Estoque",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Stock mínimo e alertas",
+      "body": "Definir quantidade mínima por item e gerar alertas (notificação/email) quando o estoque atingir ou ultrapassar o limite mínimo.",
+      "module": "Estoque",
+      "priority": "Medium",
+      "effort": "S",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Cadastro de património",
+      "body": "Registar bens patrimoniais da igreja: nome, descrição, número de série, data de aquisição, valor, localização e responsável.",
+      "module": "Manutenção",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Abertura de ocorrência de manutenção",
+      "body": "Permitir que membros e voluntários abram ocorrências de manutenção para bens patrimoniais ou espaços: descrição do problema, urgência, foto e acompanhamento de status.",
+      "module": "Manutenção",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Escala de limpeza",
+      "body": "Criar e gerir escalas de limpeza dos espaços da igreja: definir responsáveis por espaço e data, enviar lembretes e registar conclusão.",
+      "module": "Operação",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Controlo de chaves",
+      "body": "Registar todas as chaves da igreja, gerir empréstimos e devoluções com histórico de quem detém cada chave e desde quando.",
+      "module": "Operação",
+      "priority": "Medium",
+      "effort": "S",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Evolução de pedidos de oração",
+      "body": "Melhorar o módulo existente de pedidos de oração: categorização, acompanhamento de status (em oração, respondido), privacidade e notificações.",
+      "module": "Pastoral",
+      "priority": "High",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Planejado"
+    },
+    {
+      "title": "Novo módulo de pedidos de propósito/jejum",
+      "body": "Criar módulo para membros registarem propósitos e compromissos de jejum, com período, tipo, visibilidade e acompanhamento pastoral.",
+      "module": "Pastoral",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Inscrições e presença em eventos",
+      "body": "Permitir que membros se inscrevam em eventos da igreja, gerir capacidade, confirmar presença no check-in e gerar relatórios de participação.",
+      "module": "Eventos",
+      "priority": "Medium",
+      "effort": "L",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Espaço de ideias e feedback",
+      "body": "Criar módulo onde membros podem submeter ideias e feedback, votar em sugestões de outros membros e líderes podem responder/implementar.",
+      "module": "Ideias",
+      "priority": "Low",
+      "effort": "M",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    },
+    {
+      "title": "Financeiro como fase futura",
+      "body": "Módulo financeiro completo: registo de dízimos e ofertas, gestão de despesas, relatórios mensais e anuais, integração com métodos de pagamento portugueses (MB Way, referência Multibanco).",
+      "module": "Financeiro",
+      "priority": "Low",
+      "effort": "XL",
+      "type": "Feature",
+      "roadmap_status": "Backlog"
+    }
+  ]
+}
