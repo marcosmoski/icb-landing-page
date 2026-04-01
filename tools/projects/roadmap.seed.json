@@ -1,0 +1,222 @@
+{
+  "project": {
+    "title": "Roadmap Sistema Igreja",
+    "shortDescription": "Roadmap do painel de gestão da Igreja Cristã de Berrini"
+  },
+  "fields": [
+    {
+      "name": "Roadmap Status",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        { "name": "Backlog",      "color": "GRAY"   },
+        { "name": "Planeado",     "color": "BLUE"   },
+        { "name": "Em Progresso", "color": "YELLOW" },
+        { "name": "Concluído",    "color": "GREEN"  },
+        { "name": "Bloqueado",    "color": "RED"    }
+      ]
+    },
+    {
+      "name": "Module",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        { "name": "Admin",      "color": "GRAY"   },
+        { "name": "Auth",       "color": "PURPLE" },
+        { "name": "Cantina",    "color": "ORANGE" },
+        { "name": "Estoque",    "color": "BLUE"   },
+        { "name": "Patrimônio", "color": "YELLOW" },
+        { "name": "Manutenção", "color": "RED"    },
+        { "name": "Limpeza",    "color": "GREEN"  },
+        { "name": "Chaves",     "color": "GRAY"   },
+        { "name": "Oração",     "color": "BLUE"   },
+        { "name": "Eventos",    "color": "PURPLE" },
+        { "name": "Financeiro", "color": "GREEN"  },
+        { "name": "Geral",      "color": "GRAY"   }
+      ]
+    },
+    {
+      "name": "Priority",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        { "name": "Critical", "color": "RED"    },
+        { "name": "High",     "color": "ORANGE" },
+        { "name": "Medium",   "color": "YELLOW" },
+        { "name": "Low",      "color": "BLUE"   }
+      ]
+    },
+    {
+      "name": "Effort",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        { "name": "XS", "color": "GREEN"  },
+        { "name": "S",  "color": "BLUE"   },
+        { "name": "M",  "color": "YELLOW" },
+        { "name": "L",  "color": "ORANGE" },
+        { "name": "XL", "color": "RED"    }
+      ]
+    },
+    {
+      "name": "Type",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        { "name": "Feature",     "color": "BLUE"   },
+        { "name": "Improvement", "color": "GREEN"  },
+        { "name": "Bug",         "color": "RED"    },
+        { "name": "Chore",       "color": "GRAY"   }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "title": "Padronizar tabelas do painel admin",
+      "module": "Admin",
+      "priority": "High",
+      "effort": "S",
+      "type": "Improvement",
+      "status": "Backlog"
+    },
+    {
+      "title": "Implementar permissões por role",
+      "module": "Auth",
+      "priority": "High",
+      "effort": "L",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "CRUD de produtos da cantina",
+      "module": "Cantina",
+      "priority": "High",
+      "effort": "M",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "CRUD de eventos/data da cantina",
+      "module": "Cantina",
+      "priority": "High",
+      "effort": "M",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Fluxo de pedido com comprovante",
+      "module": "Cantina",
+      "priority": "High",
+      "effort": "L",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Tela admin de retirada de pedidos",
+      "module": "Cantina",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "CRUD de categorias de estoque",
+      "module": "Estoque",
+      "priority": "Medium",
+      "effort": "S",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "CRUD de itens de estoque",
+      "module": "Estoque",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Movimentações de estoque",
+      "module": "Estoque",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Stock mínimo e alertas",
+      "module": "Estoque",
+      "priority": "Medium",
+      "effort": "S",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Cadastro de patrimônio",
+      "module": "Patrimônio",
+      "priority": "Low",
+      "effort": "M",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Abertura de ocorrência de manutenção",
+      "module": "Manutenção",
+      "priority": "Low",
+      "effort": "M",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Escala de limpeza",
+      "module": "Limpeza",
+      "priority": "Low",
+      "effort": "S",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Controlo de chaves",
+      "module": "Chaves",
+      "priority": "Low",
+      "effort": "S",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Evolução de pedidos de oração",
+      "module": "Oração",
+      "priority": "Medium",
+      "effort": "M",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Novo módulo de pedidos de propósito/jejum",
+      "module": "Oração",
+      "priority": "Low",
+      "effort": "L",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Inscrições e presença em eventos",
+      "module": "Eventos",
+      "priority": "Medium",
+      "effort": "L",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Espaço de ideias e feedback",
+      "module": "Geral",
+      "priority": "Low",
+      "effort": "S",
+      "type": "Feature",
+      "status": "Backlog"
+    },
+    {
+      "title": "Financeiro como fase futura",
+      "module": "Financeiro",
+      "priority": "Low",
+      "effort": "XL",
+      "type": "Feature",
+      "status": "Backlog"
+    }
+  ]
+}

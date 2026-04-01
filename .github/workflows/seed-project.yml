@@ -1,0 +1,43 @@
+name: Seed GitHub Project V2 — Roadmap Sistema Igreja
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry-run mode (true = only log, no API writes)'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      owner:
+        description: 'GitHub owner (user or org). Leave blank to auto-detect from repo.'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  seed:
+    name: Seed Project V2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Seed Project
+        env:
+          # A Personal Access Token (classic) with scopes: project, read:org
+          # Note: fine-grained tokens do NOT support Projects V2 (GitHub limitation).
+          # Store it as a repository/org secret named GH_PROJECT_TOKEN.
+          GH_TOKEN: ${{ secrets.GH_PROJECT_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          OWNER: ${{ inputs.owner }}
+        run: |
+          chmod +x tools/projects/seed-project.sh
+          bash tools/projects/seed-project.sh
