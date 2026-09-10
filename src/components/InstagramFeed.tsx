@@ -1,8 +1,14 @@
 import React, { useEffect } from 'react';
+import { useCookieConsent } from '@/hooks/useCookieConsent';
 
 const InstagramFeed: React.FC = () => {
+  const { acceptsExternalContent, accept } = useCookieConsent();
+
   useEffect(() => {
-    // Carregar o script do Juicer.io
+    // O Juicer.io é um serviço externo que pode colocar cookies próprios:
+    // só o carregamos depois de a pessoa aceitar conteúdo externo.
+    if (!acceptsExternalContent) return;
+
     const script = document.createElement('script');
     script.src = 'https://www.juicer.io/embed/icbgaia/embed-code.js';
     script.async = true;
@@ -10,10 +16,9 @@ const InstagramFeed: React.FC = () => {
     document.body.appendChild(script);
 
     return () => {
-      // Limpar o script quando o componente for desmontado
-      document.body.removeChild(script);
+      script.remove();
     };
-  }, []);
+  }, [acceptsExternalContent]);
 
   return (
     <section className="max-w-7xl mx-auto px-6 pb-16">
@@ -23,7 +28,24 @@ const InstagramFeed: React.FC = () => {
       </h2>
       
       {/* Container do Juicer.io */}
-      <div className="juicer-feed" data-feed-id="icbgaia"></div>
+      {acceptsExternalContent ? (
+        <div className="juicer-feed" data-feed-id="icbgaia"></div>
+      ) : (
+        <div className="rounded-2xl border border-white/15 bg-white/5 p-8 text-center">
+          <p className="text-white/85">
+            O feed do Instagram é carregado por um serviço externo, que pode colocar cookies próprios.
+          </p>
+          <p className="text-white/60 text-sm mt-2">
+            Aceite o conteúdo externo para o ver aqui, ou abra o nosso perfil diretamente no Instagram.
+          </p>
+          <button
+            onClick={accept}
+            className="mt-5 min-h-[44px] px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 transition-colors"
+          >
+            Carregar o feed do Instagram
+          </button>
+        </div>
+      )}
 
       {/* Link para ver mais */}
       <div className="text-center mt-8">

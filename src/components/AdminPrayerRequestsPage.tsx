@@ -135,6 +135,12 @@ const AdminPrayerRequestsPage: React.FC = () => {
             >
               Pedidos de oração
             </Link>
+            <Link
+              to="/admin/pesquisas"
+              className="px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors"
+            >
+              Pesquisas
+            </Link>
             <button
               onClick={handleLogout}
               className="px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-600/30 rounded-lg text-sm font-medium transition-colors"

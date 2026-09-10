@@ -1,10 +1,24 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { legalLinks } from '@/lib/legal';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="max-w-6xl mx-auto px-6 pb-8 text-white/60 text-sm">
+    <footer className="max-w-6xl mx-auto px-4 sm:px-6 pb-8 pt-8 text-white/60 text-sm border-t border-white/10 mt-8">
+      <nav className="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-2 mb-5">
+        {legalLinks.map((link) => (
+          <Link
+            key={link.path}
+            to={link.path}
+            className="text-white/60 hover:text-white/90 underline underline-offset-4 transition-colors"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </nav>
+
       <div className="flex flex-col md:flex-row items-center justify-between gap-4">
         <p>© {currentYear} Igreja ICB GAIA — Todos os direitos reservados.</p>
 

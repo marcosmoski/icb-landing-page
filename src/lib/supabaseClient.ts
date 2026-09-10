@@ -81,7 +81,23 @@ export interface Survey {
   updated_at?: string;
 }
 
-export type SurveyAnswerValue = string | string[] | boolean | null;
+/**
+ * Campos que o admin pode alterar. Restringe `id`/`created_at`, que nunca devem ir no update.
+ */
+export type SurveyUpdate = Partial<
+  Pick<Survey, 'title' | 'description' | 'fields' | 'status' | 'thank_you_message' | 'closed_at'>
+>;
+
+/**
+ * O que a RPC `get_open_survey` devolve para quem abre o link.
+ * Sem datas nem campos internos: o público não precisa deles.
+ */
+export type PublicSurvey = Pick<
+  Survey,
+  'id' | 'slug' | 'title' | 'description' | 'fields' | 'status' | 'thank_you_message'
+>;
+
+export type SurveyAnswerValue = string | string[] | null;
 
 export interface SurveyResponse {
   id: number;
