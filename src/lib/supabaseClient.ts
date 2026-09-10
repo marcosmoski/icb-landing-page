@@ -43,6 +43,53 @@ export interface PedidoOracao {
   updated_at?: string;
 }
 
+// ========================================
+// Pesquisas (surveys) - formulários dinâmicos
+// ========================================
+
+export type SurveyStatus = 'draft' | 'open' | 'closed';
+
+export type SurveyFieldType =
+  | 'text'
+  | 'long_text'
+  | 'email'
+  | 'phone'
+  | 'date'
+  | 'single_choice'
+  | 'multiple_choice'
+  | 'yes_no';
+
+export interface SurveyField {
+  id: string;
+  type: SurveyFieldType;
+  label: string;
+  description?: string;
+  required: boolean;
+  options?: string[];
+}
+
+export interface Survey {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string | null;
+  fields: SurveyField[];
+  status: SurveyStatus;
+  thank_you_message?: string | null;
+  closed_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export type SurveyAnswerValue = string | string[] | boolean | null;
+
+export interface SurveyResponse {
+  id: number;
+  survey_id: string;
+  answers: Record<string, SurveyAnswerValue>;
+  created_at?: string;
+}
+
 export interface PrayerEmailPayload {
   nome: string;
   telefone?: string;
